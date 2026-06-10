@@ -1,0 +1,54 @@
+.most-sold-carousel .slick-prev,
+    .most-sold-carousel .slick-next {
+        z-index: 10;
+    }
+    .most-sold-carousel .slick-prev:before,
+    .most-sold-carousel .slick-next:before {
+        font-size: 30px;
+        color: #1d4ed8;
+    }
+
+    /* Estilos para los productos dentro del carrusel */
+    .carousel-product-item {
+        max-width: 300px; /* Limita el ancho máximo del producto */
+        margin: 0 10px; /* Añade un espacio entre los productos */
+        display: flex; /* Asegura que la tarjeta se comporte como un flexbox */
+        flex-direction: column;
+        align-items: center;
+    }
+    .carousel-product-item img {
+        max-width: 80%; /* Asegura que la imagen no sea más grande que el contenedor */
+        height: auto;
+    }
+
+    /* Ocultar flechas en móviles */
+    @media (max-width: 768px) {
+        .slick-prev,
+        .slick-next {
+            display: none !important;
+        }
+        .carousel-product-item {
+                max-width: 220px; /* Establece el ancho angosto para móvil */
+            }
+
+            /* Ocultar flechas en móviles (ya lo tienes, lo mantengo) */
+            .slick-prev,
+            .slick-next {
+                display: none !important;
+            }
+        /* AÑADIR ESTE BLOQUE PARA UNIFORMAR LA ALTURA EN MÓVIL */
+                .carousel-product-item > div:first-child {
+                    height: 140px; /* Altura fija para el contenedor de la imagen (ajusta este valor) */
+                    display: flex; /* Asegura que el contenido se centre */
+                    justify-content: center;
+                    align-items: center;
+                    overflow: hidden; /* Oculta si la imagen es muy grande */
+                }
+
+                .carousel-product-item img {
+                    max-width: 100%;
+                    height: 100%; /* La imagen llenará el contenedor de 140px de altura */
+                    object-fit: contain;
+                }
+
+    }

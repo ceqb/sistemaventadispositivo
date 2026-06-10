@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mis Favoritos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <link rel="icon" type="image/x-icon" th:href="@{/Adminlte/img/favicon.ico}">
+    <link th:href="@{/css/styleCarousel.css}" rel="stylesheet"/>
+    <link th:href="@{/css/newstyletienda.css}" rel="stylesheet"/>
+</head>
+
+<body class="bg-gray-100">
+<div class="bg-gray-900 py-2 px-4 md:px-12 text-gray-200">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="hidden md:flex items-center space-x-6 text-sm">
+            <a class="hover:text-gray-400 transition-colors" href="">Acerca de</a>
+            <a class="hover:text-gray-400 transition-colors" href="">Contacto</a>
+            <a class="hover:text-gray-400 transition-colors" href="">Ayuda</a>
+            <a class="hover:text-gray-400 transition-colors" href="">Preguntas frecuentes</a>
+        </div>
+
+        <!-- Dropdown de la cuenta -->
+        <div class="relative inline-block text-left">
+            <button type="button" id="account-dropdown-btn" class="inline-flex items-center text-sm font-semibold hover:text-gray-400 transition-colors dropdown-toggle" aria-expanded="true" aria-haspopup="true">
+                <div th:if="${session.usuarioLogueado}">
+                    <span th:text="'Hola, ' + ${session.usuarioLogueado.nombre}"></span>
+                </div>
+                <div th:unless="${session.usuarioLogueado}">
+                    <span>Cuenta</span>
+                </div>
+                <i class="fas fa-caret-down ml-1"></i>
+            </button>
+
+            <div id="account-dropdown-menu" class="dropdown-menu origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="account-dropdown-btn" tabindex="-1">
+                <div class="py-1" role="none">
+                    <div th:if="${session.usuarioLogueado != null and session.usuarioLogueado.nombreCargo == 'User'}">
+                        <a th:href="@{/pedidosCliente/historialCliente}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                            <i class="fas fa-truck mr-2"></i>Seguir mi pedido
+                        </a>
+                    </div>
+                    <div th:if="${session.usuarioLogueado != null and session.usuarioLogueado.nombreCargo == 'Administrador'}">
+                        <a th:href="@{/pedidosAdmin/historialAdmin}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                            <i class="fas fa-truck mr-2"></i>Seguir mi pedido
+                        </a>
+                    </div>
+                    <div th:if="${session.usuarioLogueado}">
+                        <a th:href="@{/logout}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                        </a>
+                    </div>
+                    <div th:unless="${session.usuarioLogueado}">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="showLoginModal()">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
+                        </a>
+                        <a th:href="@{/registrar}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                            <i class="fas fa-user-plus mr-2"></i>Registrarse
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Topbar End -->
+
+<!-- Header & Navbar -->
+<div th:replace="~{fragments/navMenu :: header-principal}"></div>
+<div class="max-w-6xl mx-auto mt-10 mb-6 px-4 flex justify-between items-center border-b pb-4">
+    <h1 class="text-3xl font-bold text-gray-800">Mis Productos Favoritos</h1>
+
+    <a th:href="@{/tienda}"
+       class="flex items-center bg-indigo-600 text-white font-semibold py-2 px-4 rounded-xl shadow-lg
+              hover:bg-indigo-700 transition duration-300 transform hover:scale-105 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+        </svg>
+        Volver a la Tienda
+    </a>
+</div>
+
+<div class="max-w-6xl mx-auto px-4">
+
+    <div th:if="${favoritos.isEmpty()}" class="text-center py-24 bg-white rounded-xl shadow-lg m-4">
+        <i class="fas fa-heart-broken text-7xl text-gray-300 mb-4"></i>
+        <p class="text-gray-800 text-2xl font-semibold mb-2">¡Tu lista está un poco vacía!</p>
+        <p class="text-gray-600 text-lg mb-6">Parece que aún no has marcado ningún producto como favorito.</p>
+        <a th:href="@{/tienda}"
+           class="mt-6 inline-flex items-center bg-indigo-500 text-white font-semibold py-3 px-6 rounded-full shadow-lg
+                  hover:bg-indigo-600 transition duration-300 transform hover:scale-105">
+            <i class="fas fa-shopping-bag mr-2"></i> Explorar la Tienda Ahora
+        </a>
+    </div>
+
+    <div th:if="${!favoritos.isEmpty()}"
+         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
+
+        <div th:each="p : ${favoritos}"
+             class="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 hover:shadow-xl hover:-translate-y-1 transition duration-300 flex flex-col relative">
+
+            <form th:action="@{/favoritos/eliminar}" method="post" class="absolute top-4 right-4 z-10">
+                <input type="hidden" name="productoId" th:value="${p.id_dpc}" />
+                <button type="submit"
+                        title="Quitar de Favoritos"
+                        onclick="return confirm('¿Seguro que deseas quitar este producto de tus favoritos?');"
+                        class="p-2 rounded-full bg-white shadow-md text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors">
+                    <i class="fas fa-heart-broken text-lg"></i>
+                </button>
+            </form>
+            <div class="w-full h-56 bg-gray-50 rounded-xl overflow-hidden shadow-md"
+                 th:with="folder=${p.modelo_dpc.replaceAll('\s+', '_')}">
+                <img th:src="@{'/uploads/' + ${folder} + '/' + ${p.rutaFoto_dpc}}"
+                     alt="Imagen del producto"
+                     class="w-full h-[140px] sm:h-[200px] object-contain">
+            </div>
+
+            <div class="mt-4 flex flex-col justify-between flex-1">
+
+                <div class="titulo-producto p-1 rounded-lg min-h-[3.5rem]">
+                    <h3 class="text-lg font-semibold text-gray-800 tracking-wide leading-tight line-clamp-2
+                       hover:text-indigo-600 transition-colors duration-200"
+                        th:text="${p.modelo_dpc}">
+                    </h3>
+                </div>
+
+                <div class="precio-producto p-2 rounded-lg mt-3">
+                    <p class="text-indigo-600 font-extrabold text-2xl tracking-tight text-center"
+                       th:text="'S/ ' + ${p.precio_dpc}">
+                    </p>
+                </div>
+
+                <div class="mt-4 flex space-x-2">
+
+                    <form th:if="${p.inventarioDisponible != null and p.inventarioDisponible > 0}"
+                          th:action="@{/carrito/agregar}"
+                          method="post"
+                          class="flex-1">
+                        <input type="hidden" name="id" th:value="${p.id_dpc}"/>
+                        <input type="hidden" name="cantidad" value="1"/>
+
+                        <button type="submit"
+                                class="w-full text-center bg-green-500 text-white py-2 rounded-lg font-semibold text-sm hover:bg-green-600 transition">
+                            <i class="fas fa-shopping-cart mr-1"></i> Añadir
+                        </button>
+                    </form>
+
+                    <button th:unless="${p.inventarioDisponible != null and p.inventarioDisponible > 0}"
+                            class="flex-1 w-full bg-gray-400 text-white py-2 rounded-lg font-semibold cursor-not-allowed text-sm"
+                            disabled>
+                        <i class="fas fa-times-circle mr-1"></i> Sin Stock
+                    </button>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap JS (con Popper incluido) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:src="@{/js/main-store.js}"></script>
+<script th:src="@{/js/search.js}"></script>
+</body>
+</html>

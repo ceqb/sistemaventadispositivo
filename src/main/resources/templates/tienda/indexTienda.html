@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Alesstore - Tienda Online</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/Adminlte/img/favicon.ico}">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+
+    <link th:href="@{/css/styleCarousel.css}" rel="stylesheet"/>
+    <link th:href="@{/css/newstyletienda.css}" rel="stylesheet"/>
+</head>
+
+<body class="bg-gray-100">
+<div class="bg-[#0f172a] py-2.5 px-4 md:px-12 text-gray-300 border-b border-white/5 shadow-sm">
+    <div class="max-w-8xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
+
+        <div class="hidden md:flex items-center space-x-8 text-[11px] font-bold uppercase tracking-[0.1em]">
+            <a class="hover:text-blue-400 transition-all duration-300 flex items-center" href="">
+                <i class="far fa-compass mr-2 text-blue-500"></i> Acerca de
+            </a>
+            <a class="hover:text-blue-400 transition-all duration-300 flex items-center" href="">
+                <i class="far fa-envelope mr-2 text-blue-500"></i> Contacto
+            </a>
+            <a class="hover:text-blue-400 transition-all duration-300 flex items-center" href="">
+                <i class="far fa-life-ring mr-2 text-blue-500"></i> Ayuda
+            </a>
+        </div>
+
+        <div class="flex items-center space-x-6">
+            <div class="relative group">
+                <button type="button" id="account-dropdown-btn"
+                        class="flex items-center gap-3 bg-white/5 hover:bg-white/10 px-4 py-1.5 dropdown-toggle rounded-full border border-white/10 transition-all duration-300 group" aria-expanded="true" aria-haspopup="true">
+
+                    <div th:if="${session.usuarioLogueado}" class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-[10px] font-black text-white shadow-lg shadow-blue-500/20">
+                            <span th:text="${session.usuarioLogueado.nombre.substring(0,1).toUpperCase()}">U</span>
+                        </div>
+                        <span class="text-xs font-bold tracking-wide text-white" th:text="'Hola, ' + ${session.usuarioLogueado.nombre}"></span>
+                    </div>
+
+                    <div th:unless="${session.usuarioLogueado}" class="flex items-center gap-2">
+                        <i class="far fa-user-circle text-blue-400"></i>
+                        <span class="text-xs font-bold tracking-wide text-white">Mi Cuenta</span>
+                    </div>
+
+                    <i class="fas fa-chevron-down text-[10px] text-gray-500 group-hover:text-blue-400 transition-transform group-hover:rotate-180"></i>
+                </button>
+
+                <div id="account-dropdown-menu"
+                     class="dropdown-toggle absolute right-0 mt-3 w-60 rounded-2xl bg-white shadow-lg
+                            invisible opacity-0
+                            group-hover:visible group-hover:opacity-100
+                            transition-all duration-200 z-[100]" aria-expanded="true" aria-haspopup="true">
+                    <div class="py-2">
+                        <div th:if="${session.usuarioLogueado}">
+                            <div th:if="${session.usuarioLogueado.nombreCargo == 'Repartidor'}" class="px-2 mb-2">
+                                <a th:href="@{/pedidosRepartidor/pedidos}"
+                                   class="flex items-center gap-3 px-4 py-3 text-xs font-black text-blue-700 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-md">
+                                        <i class="fas fa-shipping-fast"></i>
+                                    </div>
+                                    GESTIONAR ENTREGAS
+                                </a>
+                            </div>
+
+                            <div class="px-2 space-y-1">
+                                <a th:if="${session.usuarioLogueado.nombreCargo == 'User'}" th:href="@{/pedidosCliente/historialCliente}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                    <i class="fas fa-truck-loading mr-3 text-blue-500 w-5"></i> Seguir mi pedido
+                                </a>
+                                <a th:if="${session.usuarioLogueado.nombreCargo == 'Administrador'}" th:href="@{/pedidosAdmin/historialAdmin}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                    <i class="fas fa-user-shield mr-3 text-blue-500 w-5"></i> Panel Admin
+                                </a>
+                                <a th:href="@{/favoritos}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                    <i class="fas fa-heart mr-3 text-rose-500 w-5"></i> Mis Favoritos
+                                </a>
+                                <a th:href="@{/carrito}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                                    <i class="fas fa-shopping-basket mr-3 text-blue-500 w-5"></i> Mi Carrito
+                                </a>
+
+                                <div class="border-t border-gray-100 my-1"></div>
+
+                                <a th:href="@{/logout}" class="flex items-center px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-bold">
+                                    <i class="fas fa-power-off mr-3 w-5"></i> Cerrar Sesión
+                                </a>
+                            </div>
+                        </div>
+
+                        <div th:unless="${session.usuarioLogueado}" class="px-2 space-y-1">
+                            <a href="#" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 rounded-lg transition-colors" onclick="showLoginModal()">
+                                <i class="fas fa-sign-in-alt mr-3 text-blue-500 w-5"></i> Iniciar Sesión
+                            </a>
+                            <a th:href="@{/registrar}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 rounded-lg transition-colors font-bold">
+                                <i class="fas fa-user-plus mr-3 text-blue-500 w-5"></i> Crear Cuenta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div th:replace="~{fragments/navMenu :: header-principal}"></div>
+
+<!-- PRODUCTOS RECIENTES -->
+<div class="container mx-auto px-4 pt-12 pb-8">
+    <div class="mb-10 text-center">
+        <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight"
+            th:text="${searchQuery != null and !searchQuery.isEmpty()} ? 'Resultados de búsqueda para: ' + ${searchQuery} : 'Productos Recientes'">
+            Productos Recientes
+        </h2>
+        <div class="w-20 h-1.5 bg-blue-600 mx-auto mt-4 rounded-full"></div>
+    </div>
+
+    <div id="product-grid-recientes" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-8">
+
+        <div th:each="disp : ${dispositivosRecientes}"
+             th:classappend="${disp.inventarioDisponible <= 0} ? 'opacity-60 grayscale pointer-events-none' : ''"
+             class="group relative bg-white rounded-[2rem] border border-gray-100 hover:border-blue-200 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(8,112,184,0.1)] transition-all duration-500 flex flex-col overflow-hidden"
+             th:attr="data-nombre=${disp.modelo_dpc}">
+
+            <div class="absolute top-4 left-4 z-10">
+                <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg shadow-red-500/30 uppercase tracking-wider">
+                    Oferta
+                </span>
+            </div>
+            <div th:if="${disp.inventarioDisponible <= 0}"
+                 class="absolute top-0 left-0 w-full z-20 flex items-center justify-center"
+                 style="top: 50%; transform: translateY(-50%);">
+                <div class="bg-red-600 text-white text-xs font-black px-6 py-2 rounded-full shadow-lg uppercase tracking-widest rotate-[-12deg]">
+                    Agotado
+                </div>
+            </div>
+            <div th:if="${disp.inventarioDisponible <= 0}"
+                 class="absolute top-5 left-[-28px] z-20 bg-red-600 text-white text-[10px] font-black px-10 py-1.5 uppercase tracking-widest shadow-md"
+                 style="transform: rotate(-45deg); width: 120px; text-align: center;">
+                Agotado
+            </div>
+
+            <button class="absolute top-4 right-4 z-10 w-9 h-9 bg-white/90 backdrop-blur-md rounded-full shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 hover:scale-110 transition-all border border-gray-100"
+                    th:data-id="${disp.id_dpc}"
+                    th:data-fav="${disp.favorito}"
+                    onclick="toggleFavorite(this)">
+                <i class="fas fa-heart text-base"
+                   th:classappend="${disp.favorito} ? 'text-red-500' : ''"></i>
+            </button>
+
+            <div th:with="folder=${disp.modelo_dpc.replaceAll('\s+', '_')}"
+                 class="relative aspect-[4/5] p-6 bg-gray-50 flex items-center justify-center overflow-hidden">
+                <a th:href="@{/tienda/producto/{idHash}/{slug}(idHash=${disp.idHash}, slug=${disp.modelo_dpc.toLowerCase().replaceAll('\\s+', '-')})}"
+                   th:onclick="|logClick(${disp.id_dpc})|"
+                   class="w-full h-full flex items-center justify-center">
+                    <img th:src="@{'/uploads/' + ${folder} + '/' + ${disp.rutaFoto_dpc}}"
+                         alt="Imagen del producto"
+                         class="max-w-full max-h-full object-contain transform group-hover:scale-110 transition-transform duration-700">
+                </a>
+            </div>
+
+            <div class="p-5 flex flex-col flex-grow">
+                <div class="min-h-[48px] mb-2">
+                    <a class="font-bold text-sm md:text-base text-gray-800 hover:text-blue-600 transition-colors line-clamp-2 leading-tight"
+                       th:href="@{/tienda/producto/{idHash}/{slug}(idHash=${disp.idHash}, slug=${disp.modelo_dpc.toLowerCase().replaceAll('\\s+', '-')})}"
+                       th:text="${disp.modelo_dpc}"></a>
+                </div>
+
+                <a th:href="@{/tienda/producto/{idHash}/{slug}(idHash=${disp.idHash}, slug=${disp.modelo_dpc.toLowerCase().replaceAll('\\s+', '-')})}"
+                   class="text-blue-500 text-[9px] uppercase font-black tracking-widest block mb-3 hover:text-blue-700">
+                    Detalles del Producto
+                </a>
+
+                <div class="flex items-center mb-4">
+                    <div class="flex text-yellow-400 text-[10px] space-x-0.5">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star text-gray-200"></i>
+                    </div>
+                    <span class="text-gray-400 text-[10px] ml-2 font-bold">(99)</span>
+                </div>
+
+                <div class="mt-auto mb-4">
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-xl font-black text-gray-900 tracking-tight"
+                              th:text="${'S/. ' + (disp.precio_dpc != null ? #numbers.formatDecimal(disp.precio_dpc, 1, 'COMMA', 2, 'POINT') : '0.00')}">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <form th:if="${disp.inventarioDisponible > 0}"
+                          th:action="@{/carrito/agregar}"
+                          method="post"
+                          th:onsubmit="|return handleCarritoSubmit(event, ${disp.id_dpc})|">
+                        <input type="hidden" name="id" th:value="${disp.id_dpc}"/>
+                        <input type="hidden" name="cantidad" value="1"/>
+                        <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl text-xs font-bold transition-all transform active:scale-95 shadow-lg shadow-blue-200 flex items-center justify-center gap-2">
+                            <i class="fas fa-shopping-basket"></i>
+                            <span>AÑADIR</span>
+                        </button>
+                    </form>
+
+                    <div th:if="${session.usuarioLogueado?.nombreCargo == 'Administrador'}">
+                        <a th:href="@{/comprador/nuevo/{id}(id=${disp.id_dpc})}"
+                           class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-100">
+                            <i class="fas fa-user-plus"></i>
+                            <span>NUEVA VENTA</span>
+                        </a>
+                    </div>
+
+                    <button th:unless="${disp.inventarioDisponible > 0}"
+                            class="w-full bg-gray-100 text-gray-400 py-3 rounded-2xl text-xs font-bold cursor-not-allowed flex items-center justify-center gap-2"
+                            disabled>
+                        <i class="fas fa-box"></i> SIN STOCK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="flex justify-center items-center mt-12 mb-8 space-x-2">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/tienda(page=${currentPage}, size=60, search=${searchQuery})}"
+           class="group flex items-center justify-center w-11 h-11 md:w-auto md:px-6 bg-white border border-gray-100 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.05)] text-gray-600 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 active:scale-90">
+            <i class="fas fa-chevron-left text-[10px] md:mr-2"></i>
+            <span class="hidden md:inline text-xs font-black uppercase tracking-widest">Anterior</span>
+        </a>
+
+        <div class="flex items-center gap-2 bg-white/50 p-1.5 rounded-[2rem] border border-gray-100 shadow-sm">
+            <a th:each="i : ${#numbers.sequence(startPage, endPage)}"
+               th:href="@{/tienda(page=${i + 1}, size=60, search=${searchQuery})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage}
+                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-110 z-10'
+                                : 'text-gray-500 hover:bg-gray-100 hover:text-blue-600'"
+               class="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-xl text-xs font-black transition-all duration-300 active:scale-90">
+            </a>
+        </div>
+
+        <a th:if="${currentPage < totalPages - 1}"
+           th:href="@{/tienda(page=${currentPage + 2}, size=60, search=${searchQuery})}"
+           class="group flex items-center justify-center w-11 h-11 md:w-auto md:px-6 bg-white border border-gray-100 rounded-2xl shadow-[0_4px_15px_rgba(0,0,0,0.05)] text-gray-600 hover:text-blue-600 hover:border-blue-200 transition-all duration-300 active:scale-90">
+            <span class="hidden md:inline text-xs font-black uppercase tracking-widest md:ml-2">Siguiente</span>
+            <i class="fas fa-chevron-right text-[10px] md:ml-2"></i>
+        </a>
+    </div>
+
+<!-- ICONOS DE CALIDAD -->
+<div class="container mx-auto px-4 pt-12 pb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="group flex items-center bg-white p-6 rounded-[2rem] border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] hover:-translate-y-1 transition-all duration-500">
+            <div class="w-14 h-14 shrink-0 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-500">
+                <i class="fa fa-check text-blue-600 text-xl group-hover:text-white transition-colors duration-500"></i>
+            </div>
+            <div class="ml-5">
+                <h5 class="font-black text-gray-900 text-sm uppercase tracking-wider leading-tight">Garantía Total</h5>
+                <p class="text-xs text-gray-500 mt-1">Producto de alta calidad</p>
+            </div>
+        </div>
+
+        <div class="group flex items-center bg-white p-6 rounded-[2rem] border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] hover:-translate-y-1 transition-all duration-500">
+            <div class="w-14 h-14 shrink-0 bg-emerald-50 rounded-2xl flex items-center justify-center group-hover:bg-emerald-500 transition-colors duration-500">
+                <i class="fa fa-shipping-fast text-emerald-600 text-xl group-hover:text-white transition-colors duration-500"></i>
+            </div>
+            <div class="ml-5">
+                <h5 class="font-black text-gray-900 text-sm uppercase tracking-wider leading-tight">Envío Veloz</h5>
+                <p class="text-xs text-gray-500 mt-1">Gratis en compras seleccionadas</p>
+            </div>
+        </div>
+
+        <div class="group flex items-center bg-white p-6 rounded-[2rem] border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] hover:-translate-y-1 transition-all duration-500">
+            <div class="w-14 h-14 shrink-0 bg-amber-50 rounded-2xl flex items-center justify-center group-hover:bg-amber-500 transition-colors duration-500">
+                <i class="fas fa-exchange-alt text-amber-600 text-xl group-hover:text-white transition-colors duration-500"></i>
+            </div>
+            <div class="ml-5">
+                <h5 class="font-black text-gray-900 text-sm uppercase tracking-wider leading-tight">Devoluciones</h5>
+                <p class="text-xs text-gray-500 mt-1">Hasta 14 días para cambios</p>
+            </div>
+        </div>
+
+        <div class="group flex items-center bg-white p-6 rounded-[2rem] border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] hover:-translate-y-1 transition-all duration-500">
+            <div class="w-14 h-14 shrink-0 bg-rose-50 rounded-2xl flex items-center justify-center group-hover:bg-rose-500 transition-colors duration-500">
+                <i class="fa fa-phone-volume text-rose-600 text-xl group-hover:text-white transition-colors duration-500"></i>
+            </div>
+            <div class="ml-5">
+                <h5 class="font-black text-gray-900 text-sm uppercase tracking-wider leading-tight">Soporte 24/7</h5>
+                <p class="text-xs text-gray-500 mt-1">Atención personalizada siempre</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MARCAS -->
+<div class="container mx-auto px-4 py-16">
+    <div class="flex items-center justify-center gap-4 mb-10">
+        <div class="h-[1px] w-12 bg-gray-200"></div>
+        <span class="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em]">Marcas Aliadas</span>
+        <div class="h-[1px] w-12 bg-gray-200"></div>
+    </div>
+
+    <div class="flex flex-wrap justify-center items-center gap-4 md:gap-8">
+
+        <div th:each="marca : ${ {'cisco.webp', 'hp.webp', 'kingston.webp', 'microsoft.webp', 'lenovo.png', 'nvidia.png', 'acer.jpg', 'asus.jpg'} }"
+             class="group relative bg-white w-28 h-28 md:w-36 md:h-36 rounded-[2rem] border border-gray-50 flex items-center justify-center p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-2 transition-all duration-500">
+
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[2rem]"></div>
+
+            <img th:src="@{'/AdminLTE/dist/img/' + ${marca}}"
+                 alt="Marca Partner"
+                 class="relative z-10 w-full h-full object-contain filter grayscale group-hover:grayscale-0 opacity-60 group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-110">
+        </div>
+
+    </div>
+</div>
+
+<footer class="bg-[#0f172a] text-gray-400 mt-20 pt-16 pb-8 px-6 md:px-12 rounded-t-[3rem] shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-white/5">
+    <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+
+        <div class="space-y-6">
+            <a th:href="@{/tienda}" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform">
+                    <i class="fas fa-bolt text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-black tracking-tighter text-white italic">ALES<span class="text-blue-500 not-italic">STORE</span></span>
+            </a>
+            <p class="text-sm leading-relaxed">Expertos en tecnología y hardware de alto rendimiento. Llevamos la potencia a tu hogar u oficina.</p>
+
+            <div class="space-y-3 text-sm">
+                <div class="flex items-center group cursor-pointer">
+                    <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-blue-600 transition-colors">
+                        <i class="fa fa-map-marker-alt text-blue-500 group-hover:text-white text-xs"></i>
+                    </div>
+                    <span>San Martín de Porres, Lima, Perú</span>
+                </div>
+                <div class="flex items-center group cursor-pointer">
+                    <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-blue-600 transition-colors">
+                        <i class="fa fa-envelope text-blue-500 group-hover:text-white text-xs"></i>
+                    </div>
+                    <span>info@alesstore.com</span>
+                </div>
+                <div class="flex items-center group cursor-pointer">
+                    <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center mr-3 group-hover:bg-blue-600 transition-colors">
+                        <i class="fa fa-phone-alt text-blue-500 group-hover:text-white text-xs"></i>
+                    </div>
+                    <span>+051 912751437</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h5 class="text-white font-black uppercase tracking-[0.2em] text-xs mb-8">Navegación</h5>
+            <ul class="space-y-4 text-sm font-bold">
+                <li>
+                    <a class="flex items-center hover:text-blue-500 transition-all duration-300 group" href="/">
+                        <span class="w-0 group-hover:w-4 h-[2px] bg-blue-500 transition-all mr-0 group-hover:mr-2"></span>
+                        Inicio
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center hover:text-blue-500 transition-all duration-300 group" href="/tienda">
+                        <span class="w-0 group-hover:w-4 h-[2px] bg-blue-500 transition-all mr-0 group-hover:mr-2"></span>
+                        Nuestra Tienda
+                    </a>
+                </li>
+                <li>
+                    <a class="flex items-center hover:text-blue-500 transition-all duration-300 group" href="/contact">
+                        <span class="w-0 group-hover:w-4 h-[2px] bg-blue-500 transition-all mr-0 group-hover:mr-2"></span>
+                        Soporte Técnico
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="lg:col-span-2">
+            <h5 class="text-white font-black uppercase tracking-[0.2em] text-xs mb-8">Newsletter</h5>
+            <p class="text-sm mb-6">Únete a nuestra comunidad y recibe ofertas exclusivas antes que nadie.</p>
+            <form class="relative group max-w-md">
+                <input type="email"
+                       class="w-full bg-white/5 border border-white/10 pl-6 pr-16 py-4 rounded-2xl text-sm text-white focus:outline-none focus:border-blue-500 focus:bg-white/10 transition-all"
+                       placeholder="Ingresa tu email">
+                <button type="submit"
+                        class="absolute right-2 top-2 bottom-2 px-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-500/20">
+                    <i class="fa fa-paper-plane"></i>
+                </button>
+            </form>
+
+            <div class="flex mt-8 space-x-4">
+                <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-blue-600 hover:-translate-y-1 transition-all text-white shadow-lg"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-blue-400 hover:-translate-y-1 transition-all text-white shadow-lg"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-pink-600 hover:-translate-y-1 transition-all text-white shadow-lg"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-blue-800 hover:-translate-y-1 transition-all text-white shadow-lg"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-bold uppercase tracking-widest">
+        <p>&copy; 2026 <span class="text-blue-500">Alesstore</span>. Todos los derechos reservados.</p>
+        <div class="flex items-center gap-6">
+            <a href="#" class="hover:text-white transition-colors">Términos</a>
+            <a href="#" class="hover:text-white transition-colors">Privacidad</a>
+            <div class="flex gap-2 grayscale opacity-50">
+                <i class="fab fa-cc-visa text-2xl"></i>
+                <i class="fab fa-cc-mastercard text-2xl"></i>
+                <i class="fab fa-cc-paypal text-2xl"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div id="loginModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-[#0f172a]/60 backdrop-blur-md transition-all duration-500">
+
+    <div class="relative w-full max-w-md mx-4 bg-white rounded-[2.5rem] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.3)] border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-300">
+
+        <button onclick="hideLoginModal()" class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all z-10">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="p-8 md:p-12">
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-blue-600 text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-black text-gray-900 tracking-tight uppercase">Bienvenido</h2>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Ingresa a tu cuenta Alesstore</p>
+            </div>
+
+            <form th:action="@{/login}" method="post" class="space-y-4">
+                <input type="hidden" name="redirectUrl" id="redirectUrl">
+
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                        <i class="far fa-user"></i>
+                    </div>
+                    <input type="text" id="nombre" name="nombre" placeholder="Usuario"
+                           class="w-full pl-11 pr-4 py-4 bg-gray-50 border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-sm font-bold" required>
+                </div>
+
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                        <i class="far fa-lock"></i>
+                    </div>
+                    <input type="password" id="clave" name="clave" placeholder="Contraseña"
+                           class="w-full pl-11 pr-4 py-4 bg-gray-50 border-transparent rounded-2xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-sm font-bold" required>
+                </div>
+
+                <div class="text-right">
+                    <a th:href="@{/password/forgot}" class="text-[11px] font-black text-blue-500 uppercase tracking-wider hover:text-blue-700 transition-colors">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] flex items-center justify-center gap-2 mt-4">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span class="tracking-widest text-xs">INICIAR SESIÓN</span>
+                </button>
+            </form>
+
+            <p th:if="${error}" th:text="${error}" class="text-red-500 text-[11px] font-bold mt-4 text-center bg-red-50 py-2 rounded-xl border border-red-100"></p>
+
+            <div class="mt-10 pt-8 border-t border-gray-50 text-center">
+                <p class="text-xs text-gray-500 font-medium">
+                    ¿Aún no eres parte de la comunidad?
+                </p>
+                <a th:href="@{/registrar}" class="inline-block mt-2 text-sm font-black text-gray-900 hover:text-blue-600 transition-colors border-b-2 border-blue-600 pb-1">
+                    Crea una cuenta gratis
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:src="@{/js/main-store.js}"></script>
+<script th:src="@{/js/RegistrarClic&masVendidoIndexTienda.js}"></script>
+<script th:src="@{/js/favoritos.js}"></script>
+<script th:src="@{/js/search.js}"></script>
+<script>
+    // Inputs
+    const inputPC = document.getElementById("search-input-pc");
+    const inputMobile = document.getElementById("search-input-mobile");
+
+    // Contenedores
+    const boxPC = document.getElementById("autocomplete-list-pc");
+    const boxMobile = document.getElementById("autocomplete-list-mobile");
+
+    // Verificar visibilidad REAL
+    function isVisible(el) {
+        if (!el) return false;
+        const style = window.getComputedStyle(el);
+        return style.display !== "none" &&
+               style.visibility !== "hidden" &&
+               style.opacity !== "0" &&
+               el.offsetWidth > 0 &&
+               el.offsetHeight > 0;
+    }
+
+    // Función general
+    function auto(input, box) {
+        input.addEventListener("input", () => {
+            const query = input.value.trim();
+            if (query.length < 2) {
+                box.innerHTML = "";
+                box.classList.add("hidden");
+                return;
+            }
+
+            fetch(`/tienda/sugerencias?query=${encodeURIComponent(query)}`)
+                .then(r => r.json())
+                .then(data => {
+                    box.innerHTML = "";
+                    box.classList.remove("hidden");
+
+                    data.forEach(texto => {
+                        const item = document.createElement("div");
+                        item.className = "px-3 py-2 hover:bg-gray-100 cursor-pointer";
+                        item.textContent = texto;
+
+                        item.onclick = () => {
+                            input.value = texto;
+                            box.classList.add("hidden");
+                        };
+
+                        box.appendChild(item);
+                    });
+
+                    if (data.length === 0) {
+                        box.innerHTML = "<div class='px-3 py-2 text-gray-500'>Sin resultados</div>";
+                    }
+                })
+                .catch(err => console.error("Error:", err));
+        });
+
+        // Cerrar autocompletado al hacer click afuera
+        document.addEventListener("click", (e) => {
+            if (!input.contains(e.target) && !box.contains(e.target)) {
+                box.classList.add("hidden");
+            }
+        });
+    }
+
+    // Activar en modo PC
+    if (inputPC) auto(inputPC, boxPC);
+
+    // Activar en móvil
+    if (inputMobile) auto(inputMobile, boxMobile);
+</script>
+<script>
+    const toggler = document.getElementById("navbar-toggler");
+    const mobileMenu = document.getElementById("mobile-categories");
+
+    if (toggler && mobileMenu) {
+        toggler.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+        });
+    }
+</script>
+<!--SCRIPT PARA CATEGORIAS MOVILES-->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const scrollContainer = document.querySelector('#mobile-categories .overflow-x-auto');
+        if (scrollContainer) {
+            scrollContainer.addEventListener('wheel', (e) => {
+                if (e.deltaY !== 0) {
+                    e.preventDefault();
+                    scrollContainer.scrollLeft += e.deltaY;
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

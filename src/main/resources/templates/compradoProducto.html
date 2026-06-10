@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Pedido - Alesstore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+<div class="min-h-screen flex items-center justify-center p-4 sm:p-8">
+    <div class="max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+
+        <div class="flex flex-col md:flex-row">
+
+            <div class="md:w-5/12 bg-blue-600 p-8 text-white flex flex-col justify-center items-center text-center">
+                <div class="mb-6">
+                    <span class="bg-blue-500 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full">Tu selección</span>
+                </div>
+
+                <div th:with="folder=${producto.modelo_dpc.replaceAll('\s+', '_')}"
+                     class="bg-white p-4 rounded-2xl shadow-lg mb-6 w-full aspect-square flex items-center justify-center">
+                    <img th:src="@{'/uploads/' + ${folder} + '/' + ${producto.rutaFoto_dpc}}"
+                         alt="Imagen del producto"
+                         class="max-w-full max-h-full object-contain">
+                </div>
+
+                <h3 class="text-xl font-bold mb-2 leading-tight" th:text="${producto.modelo_dpc}">Nombre del Producto</h3>
+
+                <div class="text-3xl font-black mt-4">
+                    <span th:text="${'S/. ' + (producto.precio_dpc != null ? #numbers.formatDecimal(producto.precio_dpc, 1, 'COMMA', 2, 'POINT') : '0.00')}"></span>
+                </div>
+                <p class="text-blue-200 text-sm mt-2">Precio final con impuestos incluidos</p>
+            </div>
+
+            <div class="md:w-7/12 p-8 sm:p-12">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-extrabold text-gray-800">Datos de Entrega</h2>
+                    <p class="text-gray-500">Completa la información para procesar tu pedido.</p>
+                </div>
+
+                <form th:action="${comprador.id == null} ? @{/comprador/guardar} : @{/comprador/actualizar/{id}(id=${comprador.id})}"
+                      th:object="${comprador}"
+                      method="post">
+
+                    <input type="hidden" th:field="*{productoId}" />
+
+                    <div class="relative mt-3">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Nombre Completo</label>
+                        <div class="relative">
+                            <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" th:field="*{nombre}" required
+                                   placeholder="Ej. Juan Pérez"
+                                   class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-300">
+                        </div>
+                    </div>
+
+                    <div class="relative mt-3">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Teléfono / WhatsApp</label>
+                        <div class="relative">
+                            <i class="fas fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" th:field="*{telefono}" required
+                                   id="telefonoInput"
+                                   placeholder="987 654 321"
+                                   maxlength="11"
+                                   class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-300">
+                        </div>
+                    </div>
+
+                    <div class="relative mt-3">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Cantidad</label>
+                        <div class="relative">
+                            <i class="fas fa-box absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" th:field="*{cantidad}" required
+                                   placeholder="50"
+                                   class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-300">
+                        </div>
+                    </div>
+                    <div class="mt-6 p-6 bg-blue-50/50 rounded-3xl border border-blue-100 flex justify-between items-center">
+                        <div>
+                            <p class="text-xs text-blue-500 font-bold uppercase tracking-wider">Monto a Cobrar</p>
+                            <h3 class="text-2xl font-black text-blue-900" id="visualTotal">
+                                [[${comprador.total != null ? 'S/. ' + #numbers.formatDecimal(comprador.total, 1, 'COMMA', 2, 'POINT') : 'S/. 0.00'}]]
+                            </h3>
+                        </div>
+                        <div class="text-right">
+                            <i class="fas fa-receipt text-blue-200 text-4xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2 ml-1">
+                            <i class="fas fa-truck-moving mr-1 text-blue-500"></i> Lugar de Envío
+                        </label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 ">
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Departamento</label>
+                                <select id="departamentos" name="departamentos" required
+                                        class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm appearance-none cursor-pointer">
+                                    <option value="">Seleccione...</option>
+                                </select>
+                            </div>
+
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Provincia</label>
+                                <select id="provincias" name="provincias" required disabled
+                                        class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm appearance-none cursor-pointer disabled:opacity-50">
+                                    <option value="">Seleccione...</option>
+                                </select>
+                            </div>
+
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Distrito</label>
+                                <select id="distritos" name="distritos"
+                                        th:field="*{distritoId}"
+                                        required
+                                        disabled
+                                        class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm appearance-none cursor-pointer disabled:opacity-50">
+
+                                    <option value="">Seleccione...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="relative mt-3">
+                        <label class="relative block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Dirección</label>
+                        <div class="relative">
+                            <i class="fas fa-map-marker-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" th:field="*{direccion}" required
+                                   placeholder="Av. Las Magnolias 123..."
+                                   class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-gray-300">
+                        </div>
+                    </div>
+                    <div class="relative mt-3 flex items-center">
+                        <label class="relative inline-flex items-center cursor-pointer group">
+                            <input type="checkbox" th:field="*{pagado}" class="sr-only peer">
+
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-100 rounded-full peer
+                                        peer-checked:after:translate-x-full peer-checked:bg-green-500
+                                        after:content-[''] after:absolute after:top-[2px] after:left-[2px]
+                                        after:bg-white after:border-gray-300 after:border after:rounded-full
+                                        after:h-5 after:w-5 after:transition-all">
+                            </div>
+
+                            <span class="ml-3 text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">
+                                ¿Pedido pagado?
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 text-lg">
+                            <span>Confirmar Pedido</span>
+                            <i class="fas fa-arrow-right text-sm"></i>
+                        </button>
+                    </div>
+
+                    <p class="text-center text-xs text-gray-400 mt-4">
+                        <i class="fas fa-shield-alt mr-1"></i> Pago 100% seguro y compra protegida
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Obtenemos el precio desde Thymeleaf (convertido a número)
+        const precioUnitario = [[${producto.precio_dpc}]];
+
+        // 2. Referencias a los elementos del DOM
+        const inputCantidad = document.getElementById('cantidad');
+        const visualTotal = document.getElementById('visualTotal');
+
+        // 3. Función para calcular y formatear
+        function recalcular() {
+            const cantidad = parseInt(inputCantidad.value) || 0;
+            const total = precioUnitario * cantidad;
+
+            // Formateamos a S/. 0,000.00
+            const formateado = new Intl.NumberFormat('es-PE', {
+                style: 'currency',
+                currency: 'PEN',
+                minimumFractionDigits: 2
+            }).format(total);
+
+            visualTotal.innerText = formateado;
+        }
+
+        // 4. Escuchar cada vez que el usuario escribe
+        inputCantidad.addEventListener('input', recalcular);
+
+        // Ejecutar una vez al cargar por si ya hay una cantidad (al editar)
+        recalcular();
+    });
+
+    const telInput = document.getElementById('telefonoInput');
+
+    telInput.addEventListener('input', function (e) {
+        // 1. Eliminar todo lo que no sea número
+        let value = e.target.value.replace(/\D/g, '');
+
+        // 2. Agrupar de 3 en 3 con espacios
+        // Esta expresión regular añade un espacio cada 3 dígitos
+        let formattedValue = value.match(/.{1,3}/g)?.join(' ') || '';
+
+        // 3. Devolver el valor formateado al input
+        e.target.value = formattedValue.substring(0, 11); // Limitar a 11 caracteres (9 números + 2 espacios)
+    });
+</script>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', async function() {
+
+        const baseUbigeo = '/js/ubigeo/';
+
+        const depSelect = document.getElementById('departamentos');
+        const provSelect = document.getElementById('provincias');
+        const distSelect = document.getElementById('distritos');
+
+        // Datos guardados (cuando se edita)
+        const depGuardado = [[${comprador?.ubicacion?.departamento}]];
+        const provGuardada = [[${comprador?.ubicacion?.provincia}]];
+        const distGuardado = [[${comprador?.ubicacion?.distrito}]];
+
+        // 🔹 Cargar TODO solo una vez
+        const [departamentos, provincias, distritos] = await Promise.all([
+            fetch(baseUbigeo + 'departamentos.json').then(r => r.json()),
+            fetch(baseUbigeo + 'provincias.json').then(r => r.json()),
+            fetch(baseUbigeo + 'distritos.json').then(r => r.json())
+        ]);
+
+        // ------------------------------------------------
+        // CARGAR DEPARTAMENTOS
+        // ------------------------------------------------
+        departamentos.forEach(d => {
+            depSelect.options.add(new Option(d.name, d.id));
+        });
+
+        // ------------------------------------------------
+        // EVENTO DEPARTAMENTO
+        // ------------------------------------------------
+        depSelect.addEventListener('change', function() {
+
+            const depId = this.value;
+
+            provSelect.innerHTML = '<option value="">Seleccione...</option>';
+            distSelect.innerHTML = '<option value="">Seleccione...</option>';
+
+            provSelect.disabled = false;
+            distSelect.disabled = true;
+
+            const filtradas = provincias.filter(p => p.department_id == depId);
+
+            filtradas.forEach(p => {
+                provSelect.options.add(new Option(p.name, p.id));
+            });
+        });
+
+        // ------------------------------------------------
+        // EVENTO PROVINCIA
+        // ------------------------------------------------
+        provSelect.addEventListener('change', function() {
+
+            const provId = this.value;
+
+            distSelect.innerHTML = '<option value="">Seleccione...</option>';
+            distSelect.disabled = false;
+
+            const filtrados = distritos.filter(d => d.province_id == provId);
+
+            filtrados.forEach(d => {
+                distSelect.options.add(new Option(d.name, d.id));
+            });
+        });
+
+        // ------------------------------------------------
+        // MODO EDICIÓN
+        // ------------------------------------------------
+        if (depGuardado) {
+
+            const depObj = departamentos.find(d => d.name === depGuardado);
+            if (!depObj) return;
+
+            depSelect.value = depObj.id;
+
+            const provFiltradas = provincias.filter(p => p.department_id == depObj.id);
+            provSelect.disabled = false;
+
+            provFiltradas.forEach(p => {
+                provSelect.options.add(new Option(p.name, p.id));
+            });
+
+            const provObj = provFiltradas.find(p => p.name === provGuardada);
+            if (!provObj) return;
+
+            provSelect.value = provObj.id;
+
+            const distFiltrados = distritos.filter(d => d.province_id == provObj.id);
+            distSelect.disabled = false;
+
+            distFiltrados.forEach(d => {
+                distSelect.options.add(new Option(d.name, d.id));
+            });
+
+            const distObj = distFiltrados.find(d => d.name === distGuardado);
+            if (distObj) {
+                distSelect.value = distObj.id;
+            }
+        }
+
+        // ------------------------------------------------
+        // HABILITAR SELECTS ANTES DE ENVIAR
+        // ------------------------------------------------
+        document.querySelector('form').addEventListener('submit', function() {
+            depSelect.disabled = false;
+            provSelect.disabled = false;
+            distSelect.disabled = false;
+        });
+
+    });
+</script>
+</body>
+</html>

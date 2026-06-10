@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedido Confirmado</title>
+  <meta http-equiv="refresh">
+  <link th:href="@{/css/StylePedidoConfirmado.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+  <h1 class="success">Serás redirigido a la tienda en 5 segundos...</h1>
+  <p>Mantente atento a tu correo para el seguimiento de tu pedido.</p>
+  <p>Gracias por comprar</p>
+  <br>
+  <a th:href="@{/tienda}" class="btn btn-primary">Volver al inicio</a>
+</div>
+</body>
+</html>

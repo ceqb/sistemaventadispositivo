@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<header th:fragment="header-principal" class="bg-white/90 backdrop-blur-md shadow-[0_2px_15px_rgba(0,0,0,0.05)] sticky top-0 z-40 border-b border-gray-100">
+
+    <div class="container mx-auto px-4 py-3 md:flex md:items-center md:gap-8">
+
+        <div class="flex justify-between items-center w-full md:w-auto shrink-0">
+            <button id="navbar-toggler" class="md:hidden text-gray-900 p-2 focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+            <a th:href="@{/tienda}" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 group-hover:rotate-6 transition-transform">
+                    <i class="fas fa-bolt text-white text-xl"></i>
+                </div>
+                <span class="text-2xl font-black tracking-tighter text-blue-600 italic">ALES<span class="text-gray-900 not-italic">STORE</span></span>
+            </a>
+
+            <div class="flex items-center space-x-4 md:hidden">
+                <a th:href="@{/carrito}" class="relative w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 text-gray-800">
+                    <i class="fas fa-shopping-basket"></i>
+                    <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm"
+                          th:text="${carrito != null and !carrito.isEmpty() ? #aggregates.sum(carrito.![cantidad]) : 0}">0</span>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="flex-grow max-w-2xl mx-auto hidden md:block relative group">
+            <form th:action="@{/tienda}" method="get" onsubmit="return buscarProducto(event)" class="relative">
+                <div class="relative flex items-center">
+                    <i class="fas fa-search absolute left-4 text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
+                    <input id="search-input-pc" name="search" type="text"
+                           placeholder="¿Qué estás buscando hoy?"
+                           autocomplete="off"
+                           class="w-full pl-11 pr-32 py-2.5 bg-gray-100 border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium" />
+
+                    <button type="submit" class="absolute right-1.5 bg-blue-600 text-white px-5 py-1.5 rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-md active:scale-95">
+                        BUSCAR
+                    </button>
+                </div>
+                <div id="autocomplete-list-pc"
+                     class="absolute bg-white border border-gray-100 rounded-2xl mt-2 top-full left-0 w-full hidden max-h-80 overflow-y-auto shadow-[0_20px_40px_rgba(0,0,0,0.1)] z-50 p-2">
+                </div>
+            </form>
+        </div>
+
+        <div class="hidden md:flex items-center space-x-2 shrink-0">
+            <a th:href="@{/favoritos}" class="group flex items-center gap-3 px-4 h-11 bg-white border border-slate-100 rounded-2xl hover:border-rose-100 hover:bg-rose-50/50 transition-all shadow-sm hover:shadow-md active:scale-95 relative overflow-hidden">
+                <i class="fas fa-heart text-lg text-slate-400 group-hover:text-rose-500 group-hover:scale-110 transition-all duration-300"></i>
+                <span th:if="${favoritosCount > 0}" th:text="${favoritosCount}"
+                      class="absolute -top-2 -right-2 bg-rose-500 text-white text-[9px] font-black rounded-lg h-4 w-4 flex items-center justify-center border-2 border-white shadow-sm animate-bounce"></span>
+                <div class="flex flex-col items-start leading-none z-10">
+                    <span class="text-[9px] font-black text-slate-400 group-hover:text-rose-400 uppercase tracking-widest transition-colors">Mis productos</span>
+                    <span class="text-xs font-black text-slate-900 group-hover:text-rose-600 transition-colors">Favoritos</span>
+                </div>
+            </a>
+
+            <a th:href="@{/carrito}" class="px-4 h-11 flex items-center gap-3 bg-gray-900 text-white rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-gray-200 active:scale-95 group">
+                <i class="fas fa-shopping-basket text-lg group-hover:rotate-12 transition-transform"></i>
+                <div class="flex flex-col items-start leading-none">
+                    <span class="text-[9px] font-bold text-gray-400 group-hover:text-blue-100 uppercase tracking-tighter">Mi Carrito</span>
+                    <span class="text-xs font-black" th:text="${carrito != null and !carrito.isEmpty() ? #aggregates.sum(carrito.![cantidad]) + ' Items' : '0 Items'}">0 Items</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-slate-50/50 border-t border-slate-100 hidden md:block">
+        <div class="container mx-auto px-4 flex justify-center py-2 relative">
+            <nav class="flex items-center justify-center space-x-2">
+
+                <a th:href="@{/tienda}"
+                   class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-white hover:text-blue-600 hover:shadow-sm transition-all whitespace-nowrap">
+                    Todos los productos
+                </a>
+
+                <th:block th:each="cat, stat : ${categoriasList}">
+                    <a th:if="${stat.index < 6}"
+                       th:href="@{/tienda(categoria=${cat.nombreCategoria})}"
+                       th:text="${cat.nombreCategoria}"
+                       class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-white hover:text-blue-600 hover:shadow-sm transition-all whitespace-nowrap">
+                    </a>
+                </th:block>
+
+                <div class="relative group z-50">
+                    <button type="button"
+                            class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white transition-all duration-300 flex items-center">
+                        <span>MÁS</span>
+                        <i class="fas fa-chevron-down ml-2 text-[8px] transition-transform duration-500 group-hover:rotate-180"></i>
+                    </button>
+
+                    <div class="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-64
+                    invisible opacity-0 -translate-y-2
+                    group-hover:visible group-hover:opacity-100 group-hover:translate-y-0
+                    transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1)
+                    z-50">
+
+                        <div class="bg-white/95 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] border border-slate-100 p-3 overflow-hidden ring-1 ring-black/5">
+
+                            <div class="px-4 py-2 mb-2 flex items-center justify-between">
+                                <span class="text-[9px] font-black text-blue-500 uppercase tracking-[0.2em]">Más Categorías</span>
+                                <div class="h-[1px] flex-grow ml-3 bg-gradient-to-r from-blue-100 to-transparent"></div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <a th:each="cat, stat : ${categoriasList}"
+                                   th:if="${stat.index >= 6}"
+                                   th:href="@{/tienda(categoria=${cat.nombreCategoria})}"
+                                   class="group/item flex items-center justify-between px-5 py-3 text-[12px] font-bold text-slate-700 hover:bg-blue-50 rounded-2xl transition-all duration-300">
+
+                                <span class="transition-all duration-300 group-hover/item:text-blue-600 group-hover/item:translate-x-1"
+                                      th:text="${cat.nombreCategoria}"></span>
+                                    <i class="fas fa-chevron-right text-[9px] text-blue-600 opacity-0 -translate-x-2 transition-all duration-300 group-hover/item:opacity-100 group-hover/item:translate-x-0"></i>
+                                </a>
+                            </div>
+
+                            <div class="mt-2 p-3 bg-slate-50 rounded-[1.8rem] text-center">
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Alesstore Premium Selection</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="md:hidden px-4 pb-6 bg-white">
+        <form th:action="@{/tienda}" method="get" class="relative group">
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-blue-500/60 group-focus-within:text-blue-600 transition-colors"></i>
+
+                <input id="search-input-mobile" name="search" type="text"
+                       placeholder="¿Qué producto buscas hoy?"
+                       autocomplete="off"
+                       class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-[1.25rem] text-sm font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all shadow-inner" />
+
+                <div id="autocomplete-list-mobile"
+                     class="absolute bg-white/95 backdrop-blur-lg w-full rounded-[1.5rem] mt-3 shadow-[0_20px_40px_rgba(0,0,0,0.12)] z-50 hidden border border-gray-100 overflow-hidden">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="mobile-categories"
+         class="hidden md:hidden bg-gradient-to-b from-gray-50 to-white border-t border-gray-200 animate-in slide-in-from-top duration-500 overflow-hidden">
+
+        <div class="px-4 py-5">  <!-- Reducimos padding vertical -->
+            <!-- Título más compacto -->
+            <div class="flex items-center justify-between mb-4 px-1">
+                <span class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">Categorías</span>
+                <span class="text-[9px] text-slate-400">Desliza →</span>
+            </div>
+
+            <!-- Carrusel horizontal más pequeño -->
+            <div class="relative">
+                <div class="overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth">
+                    <div class="inline-flex gap-3 pb-3 px-1">  <!-- gap reducido de 4 a 3 -->
+                        <!-- Categoría "Todos" -->
+                        <a th:href="@{/tienda}"
+                           class="flex-shrink-0 w-28 snap-start flex flex-col items-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95">  <!-- w-32 → w-28 (20% más pequeño) -->
+                            <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">  <!-- w-20 h-20 → w-16 h-16 -->
+                                <i class="fas fa-th-large text-xl text-white"></i>  <!-- text-2xl → text-xl -->
+                            </div>
+                            <span class="text-[11px] font-bold text-slate-800 text-center">Todos</span>  <!-- text-xs → text-[11px] -->
+                        </a>
+
+                        <!-- Categorías dinámicas -->
+                        <th:block th:each="cat : ${categoriasList}">
+                            <a th:href="@{/tienda(categoria=${cat.nombreCategoria})}"
+                               class="flex-shrink-0 w-28 snap-start flex flex-col items-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95">
+                                <div class="w-16 h-16 rounded-xl bg-white border border-gray-200 shadow-sm flex items-center justify-center overflow-hidden">
+                                    <i class="fas fa-tag text-xl text-blue-600"></i>  <!-- text-2xl → text-xl -->
+                                </div>
+                                <span class="text-[11px] font-bold text-slate-800 text-center line-clamp-2"
+                                      th:text="${cat.nombreCategoria}">Celulares</span>  <!-- text-xs → text-[11px] -->
+                            </a>
+                        </th:block>
+                    </div>
+                </div>
+
+                <!-- Gradiente sutil en bordes -->
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent pointer-events-none"></div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Ocultar barra de scroll para el menú horizontal */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+
+        }
+        /* Mejora el scroll en móvil */
+        .no-scrollbar {
+        -ms-overflow-style: none; scrollbar-width: none;
+
+        }
+
+        .snap-x {
+            scroll-snap-type: x mandatory;
+        }
+        .snap-start {
+            scroll-snap-align: start;
+        }
+
+        /* Gradiente sutil en los bordes para indicar que hay más */
+        .overflow-x-auto {
+            mask-image: linear-gradient(to right,
+                transparent 0%,
+                black 10%,
+                black 90%,
+                transparent 100%);
+            -webkit-mask-image: linear-gradient(to right,
+                transparent 0%,
+                black 10%,
+                black 90%,
+                transparent 100%);
+        }
+    </style>
+</header>
+
+</html>

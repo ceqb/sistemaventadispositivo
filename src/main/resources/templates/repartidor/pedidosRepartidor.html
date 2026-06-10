@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos - Repartidor</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mx-auto max-w-6xl mt-6 p-4 sm:p-6 bg-white shadow-xl rounded-xl">
+
+    <!-- 🔷 HEADER -->
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b pb-4 mb-6">
+
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-800 flex items-center">
+            <span class="mr-2 text-indigo-600">📦</span> Mis Pedidos
+        </h2>
+
+        <div class="flex gap-2 w-full sm:w-auto">
+
+            <a th:href="@{/pedidosRepartidor/pedidos-disponibles}"
+               class="relative flex-1 sm:flex-none text-center px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg shadow hover:bg-green-700">
+                Disponibles
+                <span id="contadorPedidosDisponiblesRepartidor"
+                      class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full hidden">
+                    0
+                </span>
+            </a>
+
+            <a th:href="@{/logout}"
+               class="flex-1 sm:flex-none text-center px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shadow hover:bg-red-700">
+                Salir
+            </a>
+
+        </div>
+    </div>
+
+    <!-- ⚠️ MENSAJE -->
+    <div th:if="${pendientesMsg}"
+         class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-md mb-4 font-medium shadow">
+        <p th:text="${pendientesMsg}"></p>
+    </div>
+
+    <!-- 📭 VACÍO -->
+    <div th:if="${#lists.isEmpty(pedidos)}"
+         class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg">
+        No tienes pedidos asignados aún.
+    </div>
+
+    <!-- 📱 VISTA MÓVIL -->
+    <div class="block sm:hidden space-y-4" th:if="${!#lists.isEmpty(pedidos)}">
+
+        <div th:each="pedido : ${pedidos}"
+             class="bg-white border rounded-xl shadow p-4">
+
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-bold text-gray-800">
+                    #<span th:text="${pedido.numeroPedido}"></span>
+                </span>
+
+                <span th:text="${pedido.estadoPedido}"
+                      th:classappend="${pedido.estadoPedido == 'ASIGNADO' ? 'bg-yellow-100 text-yellow-800' :
+                                       (pedido.estadoPedido == 'EN REPARTO' ? 'bg-blue-100 text-blue-800' :
+                                       'bg-gray-100 text-gray-800')}"
+                      class="px-2 py-1 text-xs font-semibold rounded-full">
+                </span>
+            </div>
+
+            <p class="text-sm text-gray-600 mb-1">
+                👤 <span th:text="${pedido.usuarioNombre}"></span>
+            </p>
+
+            <p class="text-sm text-gray-600 mb-3">
+                💳 <span th:text="${pedido.metodoPago}"></span>
+            </p>
+
+            <a th:href="@{/pedidosRepartidor/pedido/{id}(id=${pedido.id})}"
+               class="block w-full text-center bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700">
+                Ver Detalle
+            </a>
+
+        </div>
+    </div>
+
+    <!-- 🖥️ VISTA DESKTOP -->
+    <div class="hidden sm:block overflow-x-auto shadow-lg rounded-lg"
+         th:if="${!#lists.isEmpty(pedidos)}">
+
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Número</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Cliente</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Pago</th>
+                <th class="px-6 py-3"></th>
+            </tr>
+            </thead>
+
+            <tbody class="bg-white divide-y divide-gray-200">
+            <tr th:each="pedido : ${pedidos}">
+                <td class="px-6 py-4 font-medium text-gray-900"
+                    th:text="${pedido.numeroPedido}"></td>
+
+                <td class="px-6 py-4 text-gray-700"
+                    th:text="${pedido.usuarioNombre}"></td>
+
+                <td class="px-6 py-4">
+                    <span th:text="${pedido.estadoPedido}"
+                          th:classappend="${pedido.estadoPedido == 'ASIGNADO' ? 'bg-yellow-100 text-yellow-800' :
+                                           (pedido.estadoPedido == 'EN REPARTO' ? 'bg-blue-100 text-blue-800' :
+                                           'bg-gray-100 text-gray-800')}"
+                          class="px-2 py-1 text-xs font-semibold rounded-full">
+                    </span>
+                </td>
+
+                <td class="px-6 py-4 text-gray-700"
+                    th:text="${pedido.metodoPago}"></td>
+
+                <td class="px-6 py-4 text-right">
+                    <a th:href="@{/pedidosRepartidor/pedido/{id}(id=${pedido.id})}"
+                       class="text-indigo-600 hover:underline font-semibold">
+                        Ver Detalle
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- 🔔 WEBSOCKET -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<script>
+    let notiCountRepartidor = 0;
+
+    function incrementarContadorRepartidor() {
+        notiCountRepartidor++;
+        const badge = document.getElementById("contadorPedidosDisponiblesRepartidor");
+        badge.innerText = notiCountRepartidor;
+        badge.classList.remove("hidden");
+    }
+
+    let socket = new SockJS('/ws-notificaciones');
+    let stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function () {
+        stompClient.subscribe('/topic/notificaciones', function (notificacion) {
+            const data = JSON.parse(notificacion.body);
+            mostrarNotificacionRepartidor(data);
+            incrementarContadorRepartidor();
+        });
+    });
+
+    function mostrarNotificacionRepartidor(data) {
+        const alerta = document.createElement('div');
+        alerta.className =
+            "fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 bg-blue-600 text-white px-4 py-3 rounded-xl shadow-lg z-50";
+        alerta.innerHTML = `
+            <strong>Nuevo Pedido</strong><br>
+            Pedido #${data.pedidoId}<br>
+            Total: S/ ${data.total}
+        `;
+        document.body.appendChild(alerta);
+        setTimeout(() => alerta.remove(), 8000);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Layout Móvil (Flexbox) */
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden; /* Evita el scroll horizontal accidental */
+        }
+        .main-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background-color: #1f2937;
+            color: #d1d5db;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .main-sidebar.mobile-open {
+            transform: translateX(0);
+        }
+        .content-wrapper {
+            flex-grow: 1;
+            padding: 1.5rem;
+            margin-left: 0;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .main-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: #ffffff;
+            padding: 1rem 1.5rem;
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* === CORRECCIÓN CLAVE PARA ESCRITORIO (>= 768px) usando CSS Grid === */
+        @media (min-width: 768px) {
+            .wrapper {
+                /* Usamos Grid para definir una columna fija (sidebar) y una columna flexible (contenido) */
+                display: grid;
+                grid-template-columns: 280px 1fr;
+                width: 100%;
+            }
+            .main-sidebar {
+                           transform: translateX(0);
+                           /* La hacemos estática para que entre en el flujo del Grid */
+                           position: static;
+                           height: auto; /* Permite que la altura se ajuste al contenido o al viewport si es necesario */
+                       }
+            .content-wrapper {
+                /* El margen ya no es necesario, ya que Grid maneja la posición */
+                margin-left: 0;
+                /* El header de escritorio no necesita sticky */
+            }
+            .main-header {
+                position: static;
+                border-radius: 0;
+            }
+        }

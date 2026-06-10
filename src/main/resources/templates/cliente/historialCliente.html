@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historial de Pedidos</title>
+  <!-- Incluye Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Incluye Font Awesome para iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/newstyletienda.css}" rel="stylesheet"/>
+  <style>
+    body {
+        font-family: 'Inter', sans-serif;
+
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans antialiased">
+<div class="bg-gray-900 py-2 px-4 md:px-12 text-gray-200">
+    <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="hidden md:flex items-center space-x-6 text-sm">
+            <a class="hover:text-gray-400 transition-colors" href="">Acerca de</a>
+            <a class="hover:text-gray-400 transition-colors" href="">Contacto</a>
+            <a class="hover:text-gray-400 transition-colors" href="">Ayuda</a>
+            <a class="hover:text-gray-400 transition-colors" href="">Preguntas frecuentes</a>
+        </div>
+
+        <div class="flex items-center space-x-4">
+
+            <div class="relative inline-block text-left">
+                <button type="button" id="account-dropdown-btn" class="inline-flex items-center text-sm font-semibold hover:text-gray-400 transition-colors dropdown-toggle" aria-expanded="true" aria-haspopup="true">
+                    <div th:if="${session.usuarioLogueado}">
+                        <span th:text="'Hola, ' + ${session.usuarioLogueado.nombre}"></span>
+                    </div>
+                    <div th:unless="${session.usuarioLogueado}">
+                        <span>Cuenta</span>
+                    </div>
+                    <i class="fas fa-caret-down ml-1"></i>
+                </button>
+
+                <div id="account-dropdown-menu" class="dropdown-menu origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="account-dropdown-btn" tabindex="-1">
+                    <div class="py-1" role="none">
+                        <div th:if="${session.usuarioLogueado}">
+                            <div th:if="${session.usuarioLogueado.nombreCargo == 'User'}">
+                                <a th:href="@{/pedidosCliente/historialCliente}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-truck mr-2"></i>Seguir mi pedido
+                                </a>
+                            </div>
+                            <div th:if="${session.usuarioLogueado.nombreCargo == 'Administrador'}">
+                                <a th:href="@{/pedidosAdmin/historialAdmin}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                    <i class="fas fa-truck mr-2"></i>Seguir mi pedido
+                                </a>
+                            </div>
+                            <a th:href="@{/favoritos}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                <i class="fas fa-heart mr-2"></i>Favoritos
+                            </a>
+                            <a th:href="@{/carrito}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                <i class="fas fa-shopping-cart mr-2"></i>Mi Carrito
+                            </a>
+                            <a th:href="@{/logout}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                            </a>
+                        </div>
+                        <div th:unless="${session.usuarioLogueado}">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" onclick="showLoginModal()">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Iniciar Sesión
+                            </a>
+                            <a th:href="@{/registrar}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                <i class="fas fa-user-plus mr-2"></i>Registrarse
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<header class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="container mx-auto px-4 py-4 md:flex md:justify-between md:items-center">
+
+        <div class="flex justify-between items-center w-full md:w-auto">
+
+            <a th:href="@{/tienda}" class="flex-shrink-0">
+                <span class="text-3xl font-bold uppercase text-blue-600">Ales<span class="text-gray-900">store</span></span>
+            </a>
+
+            <div class="flex items-center space-x-5 md:hidden">
+                <a th:href="@{/favoritos}" class="text-gray-800 hover:text-blue-600 transition-colors">
+                    <i class="fas fa-heart text-lg"></i>
+                </a>
+
+                <a th:href="@{/carrito}" class="text-gray-800 hover:text-blue-600 transition-colors flex items-center relative">
+                    <i class="fas fa-shopping-cart text-lg"></i>
+                    <span class="absolute -top-1 -right-3 inline-flex items-center justify-center h-4 w-4 rounded-full bg-red-600 text-white text-xs font-bold"
+                          th:text="${carrito != null and !carrito.isEmpty() ? #aggregates.sum(carrito.![cantidad]) : 0}">0</span>
+                </a>
+                <button id="navbar-toggler" class="md:hidden text-gray-900 focus:outline-none flex-shrink-0">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+
+
+        </div>
+
+        <nav id="navbar-menu-categoria"
+             class="hidden md:flex flex-row md:items-center md:space-x-4 mt-4 md:mt-0">
+            <div class="flex md:flex-row md:space-x-4">
+                <a th:href="@{/tienda}"
+                   class="text-sm font-semibold p-2 rounded-lg
+                  hover:bg-gray-100 hover:text-blue-600
+                  transition-colors whitespace-nowrap">
+                    Ver Todo
+                </a>
+
+                <th:block th:if="${#lists.size(categoriasList) <= 5}">
+                    <a th:each="cat : ${categoriasList}"
+                       th:href="@{/tienda(categoria=${cat.id})}"
+                       th:text="${cat.nombreCategoria}"
+                       class="text-sm font-semibold p-2 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors whitespace-nowrap">
+                    </a>
+                </th:block>
+
+                <th:block th:if="${#lists.size(categoriasList) > 5}">
+                    <a th:each="cat, stat : ${categoriasList}"
+                       th:if="${stat.index < 5}"
+                       th:href="@{/tienda(categoria=${cat.id})}"
+                       th:text="${cat.nombreCategoria}"
+                       class="text-sm font-semibold p-2 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors whitespace-nowrap">
+                    </a>
+
+                    <div class="relative group">
+                        <button class="text-sm font-semibold p-2 rounded-lg text-gray-800 hover:bg-gray-100 hover:text-blue-600 transition-colors whitespace-nowrap flex items-center">
+                            MÁS <i class="fas fa-caret-down ml-1 text-xs"></i>
+                        </button>
+
+                        <div class="absolute left-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl
+                        opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                        transition-all duration-300 z-50">
+
+                            <a th:each="cat, stat : ${categoriasList}"
+                               th:if="${stat.index >= 5}"
+                               th:href="@{/tienda(categoria=${cat.id})}"
+                               th:text="${cat.nombreCategoria}"
+                               class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-200">
+                            </a>
+                        </div>
+                    </div>
+                </th:block>
+
+            </div>
+        </nav>
+        <!-- VISTA PC BUSCADOR -->
+        <div class="hidden md:flex items-center space-x-6 relative w-fit">
+            <form action="#" method="get" onsubmit="return buscarProducto(event)" class="text-center flex items-center">
+                <input id="search-input-pc" name="search" type="text"
+                       placeholder="Buscar productos..."
+                       autocomplete="off"
+                       class="w-64 px-4 py-2 border rounded-full shadow focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <div id="autocomplete-list-pc"
+                     class="absolute bg-white border border-gray-300 rounded-xl mt-1
+                top-full left-0 hidden max-h-60 overflow-y-auto shadow-lg z-50 text-xs">
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-full ml-2 hover:bg-blue-700">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </form>
+
+            <div class="flex items-center space-x-4">
+
+                <a th:href="@{/favoritos}" class="text-gray-800 hover:text-blue-600 transition-colors flex items-center relative">
+
+                    <i class="fas fa-heart text-xl"></i>
+
+                    <span th:if="${favoritosCount > 0}"
+                          th:text="${favoritosCount}"
+                          class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2
+                            bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                    </span>
+
+                </a>
+
+                <a th:href="@{/carrito}" class="text-gray-800 hover:text-blue-600 transition-colors flex items-center relative">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span class="absolute -top-1 -right-3 inline-flex items-center justify-center h-5 w-5 rounded-full bg-red-600 text-white text-xs font-bold"
+                          th:text="${carrito != null and !carrito.isEmpty() ? #aggregates.sum(carrito.![cantidad]) : 0}">0</span>
+                </a>
+            </div>
+        </div>
+        <!-- VISTA MOVIL -->
+
+        <nav id="navbar-menu"
+             class="hidden absolute top-full left-0 w-full bg-white shadow-lg p-6 z-40 md:hidden
+            font-sans tracking-normal">
+
+            <!-- BUSCADOR -->
+            <div class="w-full mb-5 relative ">
+                <form action="#" method="get" onsubmit="return buscarProducto(event)"
+                      class="w-full flex items-center gap-3">
+
+                    <input id="search-input-mobile"
+                           name="search"
+                           type="text"
+                           placeholder="Buscar productos..."
+                           autocomplete="off"
+                           class="flex-grow px-4 py-2 border border-gray-300 rounded-md
+                          shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600
+                          text-[13px] placeholder-gray-500 transition-all"/>
+                    <div id="autocomplete-list-mobile"
+                         class="absolute top-full left-0 bg-white border border-gray-300
+                rounded-md mt-1 w-full max-h-60 overflow-y-auto shadow-lg
+                hidden z-50 text-xs ">
+                    </div>
+                    <button type="submit"
+                            class="bg-blue-600 text-white px-4 py-2 rounded-md
+                           hover:bg-blue-700 transition-all text-[13px] font-medium shadow-sm">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- SECCIÓN DE CATEGORÍAS -->
+            <div class="w-full flex flex-col space-y-1.5">
+
+                <h3 class="text-[11px] font-semibold text-gray-600 uppercase px-1 pt-2 tracking-wide">
+                    Explorar categorías
+                </h3>
+                <hr class="border-gray-200 mb-1">
+
+                <a th:href="@{/tienda}"
+                   class="block text-[13px] font-medium px-3 py-2 rounded-md
+                  hover:bg-gray-100 hover:text-blue-600
+                  transition-colors">
+                    Ver Todo
+                </a>
+
+                <th:block>
+                    <a th:each="cat : ${categoriasList}"
+                       th:href="@{/tienda(categoria=${cat.id})}"
+                       th:text="${cat.nombreCategoria}"
+                       class="block text-[13px] font-medium px-3 py-2 rounded-md
+                      hover:bg-gray-100 hover:text-blue-600
+                      transition-colors">
+                    </a>
+                </th:block>
+            </div>
+        </nav>
+        <!-- END VISTA MOVIL -->
+    </div>
+</header>
+
+
+<div class="container mx-auto p-4 sm:p-8">
+  <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 sm:mb-8 text-center">Historial de Pedidos</h1>
+    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-lg shadow-md" role="alert">
+        <p class="font-bold flex items-center gap-2">
+            <i class="fas fa-truck"></i> Tiempos de Entrega
+        </p>
+        <p class="text-sm">
+            Todos los pedidos serán entregados en un plazo de **9 a 20 días hábiles** a partir de la confirmación de la compra.
+        </p>
+    </div>
+
+    <section class="content">
+        <div class="bg-white shadow-xl rounded-xl p-8">
+        </div>
+    </section>
+  <!-- Mensajes de éxito o error (ej: después de cancelar un pedido) -->
+  <div th:if="${success}" class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg" role="alert">
+    <p th:text="${success}"></p>
+  </div>
+  <div th:if="${error}" class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+    <p th:text="${error}"></p>
+  </div>
+
+  <!-- Bucle para iterar sobre la lista de pedidos -->
+  <div th:if="${pedidos != null and !pedidos.isEmpty()}" class="space-y-6">
+    <div th:each="pedido : ${pedidos}" class="bg-white p-4 sm:p-6 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center transform transition-transform duration-200 hover:scale-[1.01]">
+      <div class="flex-1">
+        <h2 class="text-xl font-bold text-gray-900">
+          Pedido #<span th:text="${pedido.numeroPedido}"></span>
+        </h2>
+        <p class="text-sm text-gray-600 mt-1">
+          Fecha: <span th:text="${#temporals.format(pedido.fechaPedido, 'dd/MM/yyyy HH:mm')}"></span>
+        </p>
+        <div class="mt-2 flex items-center gap-2">
+          <span class="text-sm font-semibold text-gray-700">Estado:</span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase"
+                th:classappend="|
+                                      ${pedido.estadoPedido.name() == 'PROCESANDO' ? 'bg-yellow-200 text-yellow-800' :
+                                      pedido.estadoPedido.name() == 'EN_CAMINO' ? 'bg-blue-200 text-blue-800' :
+                                      pedido.estadoPedido.name() == 'ENTREGADO' or pedido.estadoPedido.name() == 'ENTREGADO_REVISADO'
+                                         ? 'bg-green-200 text-green-800' :
+                                      pedido.estadoPedido.name() == 'ABANDONADO' ? 'bg-gray-400 text-gray-900' : 'bg-gray-200 text-gray-800'}|"
+                th:text="${pedido.estadoPedido.name() == 'ENTREGADO_REVISADO' ? 'ENTREGADO' : pedido.estadoPedido}">
+          </span>
+        </div>
+        <p class="mt-2 text-md font-bold text-gray-900">
+          Total: S/. <span th:text="${#numbers.formatDecimal(pedido.total, 0, 'COMMA', 2, 'POINT')}"></span>
+        </p>
+          <!-- Aviso de tiempo limitado para cancelar -->
+          <div th:if="${pedido.estadoPedido.name() == 'PROCESANDO'}"
+               class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+              <div class="flex items-center gap-2">
+                  <i class="fas fa-hourglass-half text-yellow-500"></i>
+                  <p class="text-sm text-yellow-800">
+                      Puedes cancelar este pedido dentro de las
+                      <strong>4 horas</strong> posteriores al procesamiento.
+                      Pasado ese tiempo se confirmará automáticamente.
+                  </p>
+              </div>
+          </div>
+          <div th:if="${pedido.estadoPedido.name() == 'CONFIRMADO'}"
+               class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-lg">
+              <div class="flex items-center gap-2">
+                  <i class="fas fa-check-circle text-blue-500"></i>
+                  <p class="text-sm text-blue-800">
+                      Este pedido ya fue confirmado y no puede cancelarse.
+                  </p>
+              </div>
+          </div>
+        <!-- Recordatorio de pago para pedidos pendientes -->
+        <div th:if="${pedido.estadoPago == 'PENDIENTE' and pedido.estadoPedido.name() != 'ENTREGADO'}" class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-yellow-800">
+                ¡Recordatorio! Este pedido está pendiente de pago. Lo puedes pagar ahora o cuando llegue a la puerta de tu casa.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenedor de botones -->
+      <div class="mt-4 md:mt-0 flex gap-2">
+        <!-- Enlace para ver los detalles del pedido -->
+        <a th:href="@{/pedidosCliente/detalle(numeroPedido=${pedido.numeroPedido})}"
+           class="inline-block px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors shadow-md">
+          <i class="fas fa-eye md:mr-2"></i><span class="hidden md:inline">Ver Detalles</span>
+        </a>
+
+        <!-- Botón para completar el pago (solo si el estado del pago es PENDIENTE) -->
+        <a th:if="${pedido.estadoPago == 'PENDIENTE'}"
+           th:href="@{/checkout/ir-a-pagar(id=${pedido.id})}"
+           class="inline-block px-5 py-2.5 text-sm font-semibold text-white bg-green-500 rounded-full hover:bg-green-600 transition-colors shadow-md">
+          <i class="fas fa-credit-card md:mr-2"></i><span class="hidden md:inline">Pagar ahora</span>
+        </a>
+
+        <!-- Botón para cancelar el pedido (solo si el estado del pago es PENDIENTE) -->
+          <form th:if="${pedido.estadoPago == 'PENDIENTE' and pedido.estadoPedido.name() == 'PROCESANDO'}"
+                th:action="@{/pedidosCliente/cancelar}"
+                th:method="post"
+                class="inline-block">
+          <input type="hidden" name="pedidoId" th:value="${pedido.id}">
+          <button type="submit"
+                  class="inline-block px-5 py-2.5 text-sm font-semibold text-white bg-red-500 rounded-full hover:bg-red-600 transition-colors shadow-md">
+            <i class="fas fa-times md:mr-2"></i><span class="hidden md:inline">Cancelar</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje si no hay pedidos -->
+  <div th:if="${pedidos == null or pedidos.isEmpty()}" class="bg-white p-6 rounded-xl shadow-md text-center text-gray-600">
+    <p class="text-lg font-medium">Aún no has realizado ningún pedido.</p>
+    <a th:href="@{/}" class="mt-4 inline-block px-6 py-3 text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors">
+      Comienza a comprar
+    </a>
+  </div>
+  <div class="mt-6 text-center">
+    <a th:href="@{/tienda}" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-6 rounded-full shadow-sm transition-colors duration-200">
+      Volver a la tienda
+    </a>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/js/main-store.js}"></script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+ body {
+        font-family: 'Roboto', sans-serif;
+        @apply bg-gray-100 text-gray-800 antialiased;
+        background-color: #f3f4f6;
+    }
+#modal-media-container img,
+#modal-media-container video {
+     box-sizing: border-box !important;
+     width: 100% !important;
+
+     /* CLAVE: Forzar la altura a ser automática, pero no más del 100% del contenedor */
+     height: auto !important;
+     max-width: 100% !important;
+
+     /* **NUEVA CLAVE:** Límitar la altura máxima explícitamente en PC */
+     max-height: 70vh; /* Puedes ajustar este valor (e.g., 500px o 60vh) */
+     object-fit: contain;
+}
+
+/* 2. Reglas adicionales para centrar la imagen/video */
+#modal-media-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+        padding: 0;
+        margin-left: 0;
+        margin-right: 0;
+
+          /* Asegurar que el propio contenedor no se desborde */
+                    overflow: hidden;
+}
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+    }
+
+    .modal-content {
+            background-color: white;
+
+            /* SOLUCIÓN: Usar padding-left/right más estrecho para PC */
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+            padding-left: 1rem;   /* CLAVE: Reducido a 1rem (16px) horizontalmente */
+            padding-right: 1rem;  /* CLAVE: Reducido a 1rem (16px) horizontalmente */
+
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 28rem;
+            width: 90%;
+            animation: fadeIn 0.3s ease-in-out;
+            position: relative;
+        }
+
+    .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        font-size: 1.5rem;
+        color: #9ca3af;
+        cursor: pointer;
+    }
+
+    .login-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 9999px;
+        padding-left: 2.5rem;
+    }
+
+    .login-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .back-to-top {
+        display: none;
+    }
+
+    /* Estilos para el dropdown-toggle */
+    .dropdown-menu {
+        display: none;
+    }
+    .dropdown-toggle:focus + .dropdown-menu {
+        display: block;
+    }
+    .dropdown-menu.active {
+        display: block;
+    }
+
+    /*Seguimiento de pedido*/
+    .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-procesando {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .status-en_camino {
+            background-color: #e0f2fe;
+            color: #0c4a6e;
+        }
+        .status-entregado {
+            background-color: #c7f2c7;
+            color: #059669;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 24px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10px;
+            height: 100%;
+            width: 2px;
+            background-color: #d1d5db;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background-color: #e5e7eb;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            z-index: 1;
+        }
+        .timeline-item.active::after {
+            background-color: #3b82f6;
+        }
+        .timeline-item:last-child::before {
+            content: none;
+        }
+        .timeline-item.active .timeline-dot {
+            background-color: #22c55e;
+        }
+         /*END*/
+
+         /* --- Media Queries para móviles --- */
+         @media (max-width: 768px) {
+         #modal-media-container img,
+         #modal-media-container video {
+          /* CLAVE: Asegura que padding y border no sumen al ancho total del 100% */
+              box-sizing: border-box !important;
+
+              /* El 100% ahora funcionará correctamente sin desbordar */
+              width: 87% !important;
+
+              /* Mantiene la altura automática y límites */
+              height: auto !important;
+              max-width: 100% !important;
+         }
+
+             .modal-content {
+                 padding: 1rem; /* ANTES: 1.5rem. AHORA: 1rem (16px) */
+                 max-width: 90%; /* ANTES: 95%. AHORA: 90% (o 80% si quieres más angosto) */
+                 width: 90%;
+             }
+
+             .login-input {
+                 padding: 0.5rem 1rem;
+                 padding-left: 2rem;
+             }
+
+             .timeline-item {
+                 padding-left: 25px;
+             }
+             .timeline-item::before {
+                 left: 5px;
+             }
+             .timeline-item::after {
+                 left: -2px;
+                 width: 15px;
+                 height: 15px;
+             }
+
+             /* Ajuste de badges si se necesitan */
+             .status-badge {
+                 padding: 0.2rem 0.5rem;
+                 font-size: 0.75rem;
+             }
+
+             #account-dropdown-menu {
+                     left: 50% !important;
+                     right: auto !important;
+                     transform: translateX(-50%) !important;
+                     width: 250% !important; /* ancho más bonito en móvil */
+                 }
+             /* Centrar el botón también */
+                 #account-dropdown-btn {
+                     width: 100%;
+                     justify-content: center;
+                     text-align: center;
+                 }
+         }
+          /* --- ENDs --- */
+
+          /* --- ANIMACIONES FAVORITOS --- */
+
+            @keyframes heartBeat {
+                0% { transform: scale(1); }
+                25% { transform: scale(1.3); }
+                40% { transform: scale(0.9); }
+                60% { transform: scale(1.15); }
+                100% { transform: scale(1); }
+            }
+
+            .heart-beat {
+                animation: heartBeat 0.4s ease-in-out;
+            }
+          /* --- ENDs --- */
+

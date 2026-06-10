@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="utf-8">
+    <title th:text="${p.modelo_dpc} + ' - Alesstore'">Detalle del Producto</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" th:href="@{/Adminlte/img/favicon.ico}">
+    <link th:href="@{/css/newstyletienda.css}" rel="stylesheet"/>
+</head>
+
+<body class="bg-gray-50 font-sans">
+
+<div class="container mx-auto px-4 py-8">
+    <a th:href="@{/tienda}"
+       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-gray-200 text-gray-600 font-semibold text-sm shadow-sm hover:shadow-md hover:border-blue-400 hover:text-blue-600 transition-all duration-300 mb-8 group">
+        <i class="fas fa-chevron-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+        <span>Volver a la tienda</span>
+    </a>
+
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        <div class="flex flex-col lg:flex-row">
+
+            <div class="lg:w-3/5 p-4 bg-gray-50">
+                <div class="relative group">
+                    <div id="main-container" class="relative rounded-[2rem] overflow-hidden bg-white aspect-video flex items-center justify-center shadow-inner border border-gray-100">
+
+                        <video th:if="${p.rutaVideo_dpc != null and !#strings.isEmpty(p.rutaVideo_dpc)}" id="main-media-video"
+                               class="w-full h-full object-contain bg-black rounded-[2rem]" controls autoplay muted loop>
+                            <source th:src="@{'/uploads/videos/' + ${p.rutaVideo_dpc}}" type="video/mp4">
+                        </video>
+
+                        <img th:unless="${p.rutaVideo_dpc != null and !#strings.isEmpty(p.rutaVideo_dpc)}" id="main-media-img"
+                             th:src="@{'/uploads/' + ${p.modelo_dpc.replaceAll('\s+', '_')} + '/' + ${p.rutaFoto_dpc}}"
+                             class="w-full h-full rounded-[2rem] animate-fade-in">
+                    </div>
+
+                    <button onclick="prevMedia()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white text-gray-900 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100 shadow-lg z-10">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button onclick="nextMedia()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white text-gray-900 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm transition-all opacity-0 group-hover:opacity-100 shadow-lg z-10">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div id="thumb-container" class="grid grid-cols-4 sm:flex mt-6 gap-3 pb-2">
+                    <div th:if="${p.rutaVideo_dpc != null}"
+                         class="opacity-70 hover:opacity-100 transition-opacity thumb-item flex-shrink-0 w-20 h-20 rounded-xl border-2 border-blue-600 p-1 cursor-pointer bg-black flex items-center justify-center"
+                         th:data-type="video" th:data-url="@{'/uploads/videos/' + ${p.rutaVideo_dpc}}"
+                         onclick="selectThumb(this)">
+                        <i class="fas fa-play text-white"></i>
+                    </div>
+
+                    <div class="thumb-item flex-shrink-0 w-20 h-20 rounded-2xl border border-gray-200 cursor-pointer bg-white hover:border-blue-400 hover:shadow-md transition-all overflow-hidden opacity-70 hover:opacity-100 shadow-sm"
+                         th:classappend="${p.rutaVideo_dpc == null} ? 'border-blue-600 border-2 !opacity-100' : ''"
+                         th:data-type="image"
+                         th:data-url="@{'/uploads/' + ${p.modelo_dpc.replaceAll('\s+', '_')} + '/' + ${p.rutaFoto_dpc}}"
+                         onclick="selectThumb(this)">
+
+                        <img th:src="@{'/uploads/' + ${p.modelo_dpc.replaceAll('\s+', '_')} + '/' + ${p.rutaFoto_dpc}}"
+                             class="w-full h-full object-cover">
+                    </div>
+
+                    <div th:each="img : ${p.imagenes}"
+                         class="thumb-item flex-shrink-0 w-20 h-20 rounded-2xl border border-gray-200 cursor-pointer bg-white hover:border-blue-400 hover:shadow-md transition-all overflow-hidden opacity-70 hover:opacity-100 shadow-sm"
+                         th:data-type="image"
+                         th:data-url="@{'/uploads/' + ${p.modelo_dpc.replaceAll('\s+', '_')} + '/' + ${img}}"
+                         onclick="selectThumb(this)">
+
+                        <img th:src="@{'/uploads/' + ${p.modelo_dpc.replaceAll('\s+', '_')} + '/' + ${img}}"
+                             class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:w-2/5 p-8 lg:p-12 flex flex-col justify-center">
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span th:each="cat : ${p.nombresCategorias}"
+                          class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full uppercase">
+                        <span th:text="${cat}"></span>
+                    </span>
+                </div>
+
+                <h1 class="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight" th:text="${p.modelo_dpc}">Nombre del Producto</h1>
+
+                <div class="flex items-center mb-6">
+                    <div class="flex text-yellow-400 mr-3 text-sm">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star text-gray-200"></i>
+                    </div>
+                    <span class="text-gray-400 text-sm">(4.0 Calificación)</span>
+                </div>
+
+                <p class="text-gray-600 leading-relaxed mb-8 text-base md:text-lg" th:text="${p.descripcion_dpc}">
+                    Descripción corta del producto.
+                </p>
+
+                <div class="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
+                    <div class="flex items-end gap-3">
+                        <span class="text-4xl font-black text-blue-600" th:text="'S/ ' + ${p.precio_dpc}">S/ 0.00</span>
+                        <span class="text-lg text-gray-400 line-through mb-1">S/ 100.00</span>
+                    </div>
+                    <p class="text-green-600 text-sm font-bold mt-2"><i class="fas fa-truck mr-1"></i> Envío inmediato a todo Lima</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <form th:if="${p.inventarioDisponible > 0}"
+                          th:action="@{/carrito/agregar}"
+                          th:onsubmit="|return handleCarritoSubmit(event, ${p.id_dpc})|"
+                          method="post" class="flex-grow">
+                        <input type="hidden" name="id" th:value="${p.id_dpc}"/>
+                        <input type="hidden" name="cantidad" value="1"/>
+                        <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-200 transition-all flex items-center justify-center gap-3 uppercase tracking-wider active:scale-95">
+                            <i class="fas fa-shopping-cart"></i> Añadir al Carrito
+                        </button>
+                    </form>
+
+                    <button th:unless="${p.inventarioDisponible > 0}"
+                            class="w-full bg-gray-200 text-gray-500 font-black py-4 rounded-2xl cursor-not-allowed flex items-center justify-center gap-3 uppercase tracking-wider border-2 border-dashed border-gray-300"
+                            disabled>
+                        <i class="fas fa-box-open"></i> Sin Stock Disponible
+                    </button>
+
+                    <button type="button"
+                            th:data-id="${p.id_dpc}"
+                            th:data-fav="${p.favorito}"
+                            onclick="toggleFavorite(this)"
+                            class="bg-white border-2 border-gray-100 p-4 rounded-2xl transition-all shadow-sm hover:border-red-100 group">
+                        <i class="fas fa-heart text-xl transition-colors"
+                           th:classappend="${p.favorito} ? 'text-red-500' : 'text-gray-400'"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="relacionados_fragment">
+    <style>
+        /* Animación Shimmer (Brillo de carga) */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+
+        /* Animación Reveal */
+        @keyframes revealProduct {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-reveal {
+            animation: revealProduct 0.6s ease-out forwards;
+        }
+
+        /* Ocultar imagen hasta que cargue */
+        .img-hidden { opacity: 0; transition: opacity 0.4s ease-in; }
+        .img-visible { opacity: 1; }
+    </style>
+
+    <section class="w-full bg-blue-50/30 mt-12 md:mt-20 border-t border-gray-100 pt-12 pb-20 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold mb-10 text-center text-gray-900">
+                Productos <span class="text-blue-600">Relacionados</span>
+            </h2>
+
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+
+                <div th:each="rel, iter : ${relacionados}"
+                     class="product-card animate-reveal bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between relative border border-gray-100"
+                     th:style="'animation-delay: ' + (${iter.index} * 0.1) + 's;'">
+
+                    <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-full z-30 shadow-lg pointer-events-none">
+                        Oferta
+                    </span>
+
+                    <div th:with="folder=${rel.modelo_dpc.replaceAll('\s+', '_')}"
+                         class="p-4 text-center flex items-center justify-center bg-white h-[180px] md:h-[220px] relative">
+
+                        <div class="skeleton absolute inset-0 m-4 rounded-xl z-0" id="skeleton-placeholder"></div>
+
+                        <a th:href="@{/tienda/producto/{id}/{slug}(
+                            id=${rel.id_dpc},
+                            slug=${rel.modelo_dpc.toLowerCase().replaceAll('\s+', '-')})}"
+                           class="block w-full h-full relative z-10">
+                            <img th:src="@{'/uploads/' + ${folder} + '/' + ${rel.rutaFoto_dpc}}"
+                                 alt="Imagen del producto"
+                                 onload="this.classList.add('img-visible'); this.previousElementSibling?.remove();"
+                                 class="w-full h-full object-contain hover:scale-110 transition-transform duration-500 img-hidden">
+                        </a>
+                    </div>
+
+                    <div class="p-4 text-center flex flex-col justify-between flex-grow bg-white border-t border-gray-50">
+                        <div>
+                            <a class="font-bold text-xs sm:text-base hover:text-blue-600 transition-colors line-clamp-2 h-8 md:h-12"
+                               th:href="@{/tienda/producto/{id}/{slug}(
+                                        id=${rel.id_dpc},
+                                        slug=${rel.modelo_dpc.toLowerCase().replaceAll('\\s+', '-')})}"
+                               th:text="${rel.modelo_dpc}">
+                            </a>
+                            <div class="flex justify-center my-3 text-yellow-400">
+                                <small class="fa fa-star"></small><small class="fa fa-star"></small><small class="fa fa-star"></small><small class="fa fa-star"></small><small class="fa fa-star"></small>
+                            </div>
+                            <div class="mt-4 text-sm sm:text-lg md:text-xl font-bold text-gray-900">
+                                S/. <span th:text="${rel.precio_dpc != null ? #numbers.formatDecimal(rel.precio_dpc, 1, 'COMMA', 2, 'POINT') : '0.00'}"></span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <form th:action="@{/carrito/agregar}" method="post">
+                                <input type="hidden" name="id" th:value="${rel.id_dpc}"/>
+                                <input type="hidden" name="cantidad" value="1"/>
+                                <button type="submit"
+                                        class="w-full bg-blue-600 text-[12px] md:text-base text-white py-2 rounded-full font-semibold hover:bg-blue-700 transition-all shadow-md active:scale-95">
+                                    <i class="fas fa-shopping-cart mr-2"></i>Añadir
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="modal-close" onclick="hideLoginModal()">&times;</span>
+        <div class="login-container">
+            <h2 class="text-2xl font-bold mb-4 text-center text-gray-800"><i class="fas fa-lock text-gray-600"></i> Iniciar Sesión</h2>
+            <form th:action="@{/login}" method="post">
+                <input type="hidden" name="redirectUrl" id="redirectUrl">
+                <div class="relative mb-4">
+                    <i class="fas fa-user login-icon"></i>
+                    <input type="text" id="nombre" name="nombre" placeholder="Usuario" class="login-input" required>
+                </div>
+                <div class="relative mb-4">
+                    <i class="fas fa-key login-icon"></i>
+                    <input type="password" id="clave" name="clave" placeholder="Contraseña" class="login-input" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold rounded-full py-2 hover:bg-blue-700 transition-colors"><i class="fas fa-sign-in-alt mr-2"></i> Entrar</button>
+            </form>
+            <p class="text-center mt-4 text-sm text-gray-600">
+                <a th:href="@{/password/forgot}"
+                   class="text-sm text-gray-600 hover:text-blue-600 hover:underline transition-colors">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </p>
+            <p th:if="${error}" th:text="${error}" class="text-red-500 text-sm mt-2 text-center"></p>
+            <p class="text-center mt-4 text-sm text-gray-600">
+                ¿No tienes un usuario? <a th:href="@{/registrar}" class="text-blue-600 hover:underline">Regístrate aquí.</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script th:src="@{/js/favoritos.js}"></script>
+<script th:src="@{/js/detalleProducto/detalleProducto.js}"></script>
+<script th:src="@{/js/main-store.js}"></script>
+
+<script th:src="@{/js/detalleProducto/handleCarritoSubmitAJAX.js}"></script>
+</body>
+</html>

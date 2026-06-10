@@ -1,0 +1,233 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 532676608 bytes for G1 virtual space
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   The process is running with CompressedOops enabled, and the Java Heap may be blocking the growth of the native heap
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+#   JVM is running with Zero Based Compressed Oops mode in which the Java heap is
+#     placed in the first 32GB address space. The Java Heap base address is the
+#     maximum limit for the native heap growth. Please use -XX:HeapBaseMinAddress
+#     to set the Java Heap base and to place the Java Heap above 32GB virtual address.
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_windows.cpp:3613), pid=17944, tid=46928
+#
+# JRE version:  (17.0.9+8) (build )
+# Java VM: OpenJDK 64-Bit Server VM (17.0.9+8-LTS, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentlib:jdwp=transport=dt_socket,address=127.0.0.1:55541,suspend=y,server=n -javaagent:C:\Users\cquiroz\AppData\Local\JetBrains\IdeaIC2025.2\captureAgent\debugger-agent.jar=file:///C:/Users/cquiroz/AppData/Local/Temp/capture8672571545761915137.props -Dkotlinx.coroutines.debug.enable.creation.stack.trace=false -Ddebugger.agent.enable.coroutines=true -Dkotlinx.coroutines.debug.enable.flows.stack.trace=true -Dkotlinx.coroutines.debug.enable.mutable.state.flows.stack.trace=true -Dfile.encoding=UTF-8 com.ceqb.SistemaVentaDispositivos2025.SistemaVentaDispositivos2025Application
+
+Host: 11th Gen Intel(R) Core(TM) i7-11700 @ 2.50GHz, 16 cores, 31G,  Windows 11 , 64 bit Build 22621 (10.0.22621.5415)
+Time: Fri Dec 19 14:57:46 2025 Hora est. Pacífico, Sudamérica elapsed time: 0.020556 seconds (0d 0h 0m 0s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00000172ebc00f40):  JavaThread "Unknown thread" [_thread_in_vm, id=46928, stack(0x00000029a2900000,0x00000029a2a00000)]
+
+Stack: [0x00000029a2900000,0x00000029a2a00000]
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x67cb49]
+V  [jvm.dll+0x8344da]
+V  [jvm.dll+0x835f9e]
+V  [jvm.dll+0x836603]
+V  [jvm.dll+0x247b5f]
+V  [jvm.dll+0x679969]
+V  [jvm.dll+0x66e2ba]
+V  [jvm.dll+0x307a5b]
+V  [jvm.dll+0x30ef06]
+V  [jvm.dll+0x35ecee]
+V  [jvm.dll+0x35ef1f]
+V  [jvm.dll+0x2de658]
+V  [jvm.dll+0x2df5c4]
+V  [jvm.dll+0x805d51]
+V  [jvm.dll+0x36cb51]
+V  [jvm.dll+0x7e47dc]
+V  [jvm.dll+0x3f03cf]
+V  [jvm.dll+0x3f2001]
+C  [jli.dll+0x528f]
+C  [ucrtbase.dll+0x29333]
+C  [KERNEL32.DLL+0x1259d]
+C  [ntdll.dll+0x5af78]
+
+
+---------------  P R O C E S S  ---------------
+
+Threads class SMR info:
+_java_thread_list=0x00007ffe9458ee98, length=0, elements={
+}
+
+Java Threads: ( => current thread )
+
+Other Threads:
+  0x00000172fef00880 GCTaskThread "GC Thread#0" [stack: 0x00000029a2a00000,0x00000029a2b00000] [id=44684]
+  0x00000172ebc7fa60 ConcurrentGCThread "G1 Main Marker" [stack: 0x00000029a2b00000,0x00000029a2c00000] [id=21968]
+  0x00000172ebc81b40 ConcurrentGCThread "G1 Conc#0" [stack: 0x00000029a2c00000,0x00000029a2d00000] [id=32452]
+
+[error occurred during error reporting (printing all threads), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffe93d4f097]
+
+VM state: not at safepoint (not fully initialized)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00000172ebbfc8c0] Heap_lock - owner thread: 0x00000172ebc00f40
+
+Heap address: 0x0000000604400000, size: 8124 MB, Compressed Oops mode: Zero based, Oop shift amount: 3
+
+CDS archive(s) mapped at: [0x0000000000000000-0x0000000000000000-0x0000000000000000), size 0, SharedBaseAddress: 0x0000000800000000, ArchiveRelocationMode: 1.
+Narrow klass base: 0x0000000000000000, Narrow klass shift: 0, Narrow klass range: 0x0
+
+GC Precious Log:
+<Empty>
+
+Heap:
+ garbage-first heap   total 0K, used 0K [0x0000000604400000, 0x0000000800000000)
+  region size 4096K, 0 young (0K), 0 survivors (0K)
+
+[error occurred during error reporting (printing heap information), id 0xc0000005, EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffe941368f9]
+
+GC Heap History (0 events):
+No events
+
+Dll operation events (2 events):
+Event: 0.014 Loaded shared library C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\java.dll
+Event: 0.016 Loaded shared library C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\zip.dll
+
+Deoptimization events (0 events):
+No events
+
+Classes unloaded (0 events):
+No events
+
+Classes redefined (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+VM Operations (0 events):
+No events
+
+Events (0 events):
+No events
+
+
+Dynamic libraries:
+0x00007ff7d8890000 - 0x00007ff7d889e000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\java.exe
+0x00007fff5d4f0000 - 0x00007fff5d708000 	C:\WINDOWS\SYSTEM32\ntdll.dll
+0x00007fff5d1f0000 - 0x00007fff5d2b4000 	C:\WINDOWS\System32\KERNEL32.DLL
+0x00007fff5ce10000 - 0x00007fff5d1e3000 	C:\WINDOWS\System32\KERNELBASE.dll
+0x00007fff5a780000 - 0x00007fff5a891000 	C:\WINDOWS\System32\ucrtbase.dll
+0x00007ffe99e00000 - 0x00007ffe99e17000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\jli.dll
+0x00007ffe99e20000 - 0x00007ffe99e3b000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\VCRUNTIME140.dll
+0x00007fff5d2c0000 - 0x00007fff5d472000 	C:\WINDOWS\System32\USER32.dll
+0x00007fff4fec0000 - 0x00007fff5015c000 	C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.6060_none_2712eda17382d24b\COMCTL32.dll
+0x00007fff5a750000 - 0x00007fff5a776000 	C:\WINDOWS\System32\win32u.dll
+0x00007fff5b290000 - 0x00007fff5b337000 	C:\WINDOWS\System32\msvcrt.dll
+0x00007fff5abf0000 - 0x00007fff5ac19000 	C:\WINDOWS\System32\GDI32.dll
+0x00007fff5aa10000 - 0x00007fff5ab2b000 	C:\WINDOWS\System32\gdi32full.dll
+0x00007fff5a580000 - 0x00007fff5a61a000 	C:\WINDOWS\System32\msvcp_win.dll
+0x00007fff5b690000 - 0x00007fff5b6c1000 	C:\WINDOWS\System32\IMM32.DLL
+0x00007ffe99df0000 - 0x00007ffe99dfc000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\vcruntime140_1.dll
+0x00007ffe99d60000 - 0x00007ffe99ded000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\msvcp140.dll
+0x00007ffe93a60000 - 0x00007ffe946c1000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\server\jvm.dll
+0x00007fff5b3e0000 - 0x00007fff5b491000 	C:\WINDOWS\System32\ADVAPI32.dll
+0x00007fff5b5e0000 - 0x00007fff5b688000 	C:\WINDOWS\System32\sechost.dll
+0x00007fff5a720000 - 0x00007fff5a748000 	C:\WINDOWS\System32\bcrypt.dll
+0x00007fff5ccf0000 - 0x00007fff5ce08000 	C:\WINDOWS\System32\RPCRT4.dll
+0x00007fff55910000 - 0x00007fff5591a000 	C:\WINDOWS\SYSTEM32\VERSION.dll
+0x00007fff59460000 - 0x00007fff594ad000 	C:\WINDOWS\SYSTEM32\POWRPROF.dll
+0x00007fff50360000 - 0x00007fff50394000 	C:\WINDOWS\SYSTEM32\WINMM.dll
+0x00007fff514a0000 - 0x00007fff514a9000 	C:\WINDOWS\SYSTEM32\WSOCK32.dll
+0x00007fff5b4b0000 - 0x00007fff5b521000 	C:\WINDOWS\System32\WS2_32.dll
+0x00007fff59400000 - 0x00007fff59413000 	C:\WINDOWS\SYSTEM32\UMPDC.dll
+0x00007fff59510000 - 0x00007fff59528000 	C:\WINDOWS\SYSTEM32\kernel.appcore.dll
+0x00007ffe9a190000 - 0x00007ffe9a19a000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\jimage.dll
+0x00007fff50a20000 - 0x00007fff50c53000 	C:\WINDOWS\SYSTEM32\DBGHELP.DLL
+0x00007fff5b880000 - 0x00007fff5bc11000 	C:\WINDOWS\System32\combase.dll
+0x00007fff5bd20000 - 0x00007fff5bdf8000 	C:\WINDOWS\System32\OLEAUT32.dll
+0x00007fff502a0000 - 0x00007fff502d2000 	C:\WINDOWS\SYSTEM32\dbgcore.DLL
+0x00007fff5a6a0000 - 0x00007fff5a71b000 	C:\WINDOWS\System32\bcryptPrimitives.dll
+0x00007ffe99fd0000 - 0x00007ffe9a00b000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\jdwp.dll
+0x00007ffe99fc0000 - 0x00007ffe99fce000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\instrument.dll
+0x00007ffe9a1a0000 - 0x00007ffe9a1c5000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\java.dll
+0x00007ffe9a050000 - 0x00007ffe9a068000 	C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\zip.dll
+
+dbghelp: loaded successfully - version: 4.0.5 - missing functions: none
+symbol engine: initialized successfully - sym options: 0x614 - pdb path: .;C:\Users\cquiroz\.jdks\corretto-17.0.9\bin;C:\WINDOWS\SYSTEM32;C:\WINDOWS\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_6.0.22621.6060_none_2712eda17382d24b;C:\Users\cquiroz\.jdks\corretto-17.0.9\bin\server
+
+VM Arguments:
+jvm_args: -agentlib:jdwp=transport=dt_socket,address=127.0.0.1:55541,suspend=y,server=n -javaagent:C:\Users\cquiroz\AppData\Local\JetBrains\IdeaIC2025.2\captureAgent\debugger-agent.jar=file:///C:/Users/cquiroz/AppData/Local/Temp/capture8672571545761915137.props -Dkotlinx.coroutines.debug.enable.creation.stack.trace=false -Ddebugger.agent.enable.coroutines=true -Dkotlinx.coroutines.debug.enable.flows.stack.trace=true -Dkotlinx.coroutines.debug.enable.mutable.state.flows.stack.trace=true -Dfile.encoding=UTF-8 
+java_command: com.ceqb.SistemaVentaDispositivos2025.SistemaVentaDispositivos2025Application
+java_class_path (initial): D:\SistemaVentaDispositivos2025\target\classes;C:\Users\cquiroz\.m2\repository\org\springframework\boot\spring-boot-starter-websocket\3.5.4\spring-boot-starter-websocket-3.5.4.jar;C:\Users\cquiroz\.m2\repository\org\springframework\spring-messaging\6.2.9\spring-messaging-6.2.9.jar;C:\Users\cquiroz\.m2\repository\org\springframework\spring-beans\6.2.9\spring-beans-6.2.9.jar;C:\Users\cquiroz\.m2\repository\org\springframework\spring-websocket\6.2.9\spring-websocket-6.2.9.jar;C:\Users\cquiroz\.m2\repository\org\springframework\spring-context\6.2.9\spring-context-6.2.9.jar;C:\Users\cquiroz\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.5.4\spring-boot-starter-validation-3.5.4.jar;C:\Users\cquiroz\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.43\tomcat-embed-el-10.1.43.jar;C:\Users\cquiroz\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.2.Final\hibernate-validator-8.0.2.Final.jar;C:\Users\cquiroz\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\cquiroz\.m2\repository\org\jboss\logging\jboss-logging\3.6.1.Final\jboss-logging-3.6.1.Final.jar;C:\Users\cquiroz\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\cquiroz\.m2\repository\io\netty\netty-common\4.1.123.Final\netty-common-4.1.123.Final.jar;C:\Users\cquiroz\.m2\repository\org\springframework\boot\spring-boot-starter-webflux\3.5.4\spring-boot-starter-webflux-3.5.4.jar;C:\Users\cquiroz\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.5.4\spring-boot-starter-json-3.5.4.jar;C:\Users\cquiroz\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.19.2\jackson-databind-2.19.2.jar;C:\Users\cquiroz\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.19.2\jackson-annotations-2.19.2.jar;C:\Users\cquiroz\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.19.2\jackson-core-2.19.2.jar;C:\Users\cquiroz\.m2\repository\com\fasterxml
+Launcher Type: SUN_STANDARD
+
+[Global flags]
+     intx CICompilerCount                          = 12                                        {product} {ergonomic}
+     uint ConcGCThreads                            = 3                                         {product} {ergonomic}
+     uint G1ConcRefinementThreads                  = 13                                        {product} {ergonomic}
+   size_t G1HeapRegionSize                         = 4194304                                   {product} {ergonomic}
+    uintx GCDrainStackTargetSize                   = 64                                        {product} {ergonomic}
+   size_t InitialHeapSize                          = 532676608                                 {product} {ergonomic}
+   size_t MarkStackSize                            = 4194304                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 8518631424                                {product} {ergonomic}
+   size_t MinHeapDeltaBytes                        = 4194304                                   {product} {ergonomic}
+   size_t MinHeapSize                              = 8388608                                   {product} {ergonomic}
+    uintx NonNMethodCodeHeapSize                   = 7602480                                {pd product} {ergonomic}
+    uintx NonProfiledCodeHeapSize                  = 122027880                              {pd product} {ergonomic}
+    uintx ProfiledCodeHeapSize                     = 122027880                              {pd product} {ergonomic}
+    uintx ReservedCodeCacheSize                    = 251658240                              {pd product} {ergonomic}
+     bool SegmentedCodeCache                       = true                                      {product} {ergonomic}
+   size_t SoftMaxHeapSize                          = 8518631424                             {manageable} {ergonomic}
+     bool UseCompressedClassPointers               = true                           {product lp64_product} {ergonomic}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+     bool UseG1GC                                  = true                                      {product} {ergonomic}
+     bool UseLargePagesIndividualAllocation        = false                                  {pd product} {ergonomic}
+
+Logging:
+Log output configuration:
+ #0: stdout all=warning uptime,level,tags
+ #1: stderr all=off uptime,level,tags
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Java\jdk-17
+PATH=D:\Archivo de programas CEQB\vwmareWorkstationPro17\bin\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Python313\Scripts\;C:\Python313\;F:\app\client\admindb\product\19.0.0\client_1\bin;H:\app\OracleCliente_64bits\product\11.2.0\client_1\bin;C:\Python312\Scripts\;C:\Python312\;C:\ProgramData\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\150\Tools\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\ProgramData\chocolatey\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\130\Tools\Binn\;H:\Git\cmd;C:\Program Files (x86)\Microsoft SQL Server\150\DTS\Binn\;%JAVA_HOME%\bin\;C:\Program Files\dotnet\;%MAVEN_HOME%\bin\;C:\apache-maven-3.9.10-bin\apache-maven-3.9.10\bin\;C:\Program Files (x86)\cloudflared\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\cquiroz\AppData\Local\Microsoft\WindowsApps;;C:\Program Files\Azure Data Studio\bin;D:\Archivos de programas para developer\IntelliJ IDEA Community Edition 2025.2.4\bin;C:\Users\cquiroz\.dotnet\tools;C:\Users\cquiroz\AppData\Roaming\npm;C:\Program Files\JetBrains\IntelliJ IDEA 2024.3.1.1\bin;;D:\Archivos de programas para developer\Microsoft VS Code\bin
+USERNAME=cquiroz
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 167 Stepping 1, GenuineIntel
+TMP=C:\Users\cquiroz\AppData\Local\Temp
+TEMP=C:\Users\cquiroz\AppData\Local\Temp
+
+
+
+Periodic native trim disabled
+
+
+---------------  S Y S T E M  ---------------
+
+OS:
+ Windows 11 , 64 bit Build 22621 (10.0.22621.5415)
+OS uptime: 3 days 7:06 hours
+
+CPU: total 16 (initial active 16) (8 cores per cpu, 2 threads per core) family 6 model 167 stepping 1 microcode 0x62, cx8, cmov, fxsr, ht, mmx, 3dnowpref, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, lzcnt, tsc, tscinvbit, avx, avx2, aes, erms, clmul, bmi1, bmi2, adx, avx512f, avx512dq, avx512cd, avx512bw, avx512vl, sha, fma, vzeroupper, avx512_vpopcntdq, avx512_vpclmulqdq, avx512_vaes, avx512_vnni, clflush, clflushopt, avx512_vbmi2, avx512_vbmi
+Processor Information for all 16 processors :
+  Max Mhz: 2496, Current Mhz: 2496, Mhz Limit: 2496
+
+Memory: 4k page, system-wide physical 32493M (5339M free)
+TotalPageFile size 62937M (AvailPageFile size 385M)
+current process WorkingSet (physical memory assigned to process): 12M, peak: 12M
+current process commit charge ("private bytes"): 71M, peak: 579M
+
+vm_info: OpenJDK 64-Bit Server VM (17.0.9+8-LTS) for windows-amd64 JRE (17.0.9+8-LTS), built on Oct 12 2023 16:15:33 by "Administrator" with MS VC++ 16.10 / 16.11 (VS2019)
+
+END.

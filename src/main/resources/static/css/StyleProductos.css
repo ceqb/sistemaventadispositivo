@@ -1,0 +1,178 @@
+body    {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+.dataTables_length {
+    display: none !important;
+}
+
+        /* MOBILE */
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .main-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background-color: #1f2937;
+            color: #d1d5db;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .main-sidebar.mobile-open {
+            transform: translateX(0);
+        }
+
+        .content-wrapper {
+            flex-grow: 1;
+            padding: 1.5rem;
+            margin-left: 0;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* DESKTOP */
+        @media (min-width: 768px) {
+            .wrapper {
+                display: grid;
+                grid-template-columns: 280px 1fr;
+                width: 100%;
+            }
+
+            .main-sidebar {
+                transform: translateX(0);
+                position: static;
+                height: auto;
+            }
+            .content-wrapper {
+                margin-left: 0;
+            }
+            .dataTables_paginate a,
+                .dataTables_paginate span a {
+                    padding: 8px 14px !important;
+                    font-size: 14px !important;
+                    margin: 2px !important;
+                    border-radius: 8px !important;
+                }
+
+                .dataTables_paginate {
+                    display: flex;
+                    justify-content: center;
+                    gap: 6px;
+                    flex-wrap: wrap;
+                }
+        }
+        /* 🏆 ESTILOS DE DATATABLES Y PAGINACIÓN: CURSOR AÑADIDO 🏆 */
+
+        /* Contenedores de DataTables */
+        .dataTables_wrapper > .row:last-child,
+        .dataTables_wrapper > div:last-child {
+            @apply flex flex-col sm:flex-row items-center justify-between mt-4;
+        }
+        .dataTables_info {
+            @apply text-sm text-gray-700 font-normal mb-4 sm:mb-0;
+        }
+        .dataTables_filter input, .dataTables_length select {
+            @apply rounded-lg border border-gray-300 p-2 ml-2 text-sm focus:ring-indigo-500 focus:border-indigo-500 shadow-sm;
+        }
+
+        .dataTables_paginate {
+            @apply flex items-center space-x-2;
+        }
+
+        /* 1. Estilo base de TODOS los botones (Cursor y redondeo) */
+        #tablaProductos_paginate .paginate_button {
+            /* Usamos flex para centrar los iconos y el texto */
+            @apply inline-flex items-center justify-center h-10 px-3 text-sm font-semibold transition-all duration-300;
+
+            /* AÑADIMOS EL CURSOR DE MANITO */
+            cursor: pointer !important;
+
+            border-radius: 0.5rem !important; /* rounded-lg */
+
+            background-color: transparent !important;
+            border: none !important;
+            @apply text-gray-700 hover:bg-gray-100;
+            display: inline-flex !important;
+        }
+        #tablaProductos_paginate .paginate_button:not(.previous):not(.next) {
+             min-width: 2.5rem;
+        }
+
+
+        /* 2. Estilo del botón de página actual (AZUL Sólido) */
+        #tablaProductos_paginate .paginate_button.current {
+            @apply text-white shadow-md;
+
+            background-color: #007bff !important;
+            color: white !important;
+            border: 1px solid #007bff !important;
+            text-decoration: none !important;
+
+            @apply hover:bg-blue-700 hover:border-blue-700;
+        }
+
+        /* 3. Estilo para los botones Previous/Next (Texto Azul Profesional) */
+        #tablaProductos_paginate .previous:not(.disabled),
+        #tablaProductos_paginate .next:not(.disabled) {
+            color: #007bff !important;
+
+            background-color: transparent !important;
+            border: none !important;
+
+            @apply hover:bg-gray-100 hover:text-blue-700;
+            @apply px-3;
+            box-shadow: none !important;
+        }
+
+        /* 4. Botones deshabilitados (Previous/Next inactivos) */
+        #tablaProductos_paginate .paginate_button.disabled {
+            /* SOBRESCRIBIMOS el cursor para botones deshabilitados */
+            cursor: not-allowed !important;
+            @apply shadow-none;
+
+            background-color: transparent !important;
+            border: none !important;
+            color: #a3a3a3 !important;
+
+            @apply hover:bg-transparent hover:text-gray-400;
+        }
+
+        /* 5. Asegurar que los elementos internos (iconos y texto) hereden el color */
+        #tablaProductos_paginate .previous *,
+        #tablaProductos_paginate .next * {
+            background-color: transparent !important;
+            text-decoration: none !important;
+            color: inherit !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        /* Estilos específicos para la tabla de Productos */
+        #tablaProductos thead th {
+            @apply bg-gray-100 text-gray-700 font-bold border-b-2 border-indigo-500;
+        }
+        #tablaProductos img {
+            @apply rounded-md shadow-sm border border-gray-200;
+        }
+
+        /* 🏆 NUEVOS ESTILOS PARA LA COLUMNA DESCRIPCIÓN 🏆 */
+        #tablaProductos th:nth-child(5), /* Descripción TH */
+        #tablaProductos td:nth-child(5) { /* Descripción TD */
+            max-width: 150px; /* Limita el ancho máximo, ajusta si es necesario */
+            white-space: normal !important; /* Permite saltos de línea */
+        }
+
+        #tablaProductos td:nth-child(5) {
+            /* Fuerza una altura si el texto se envuelve */
+            max-height: 80px;
+            overflow: hidden;
+        }
