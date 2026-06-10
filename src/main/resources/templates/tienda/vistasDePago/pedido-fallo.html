@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedido Fallido</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 50px;
+    }
+    .container {
+        width: 80%;
+        margin: auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    .error {
+        color: red;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="error">¡El Pago Falló! ❌</h1>
+  <p>Hubo un problema al procesar tu pago. No se pudo completar la transacción.</p>
+  <p>Por favor, intenta de nuevo o contacta a soporte.</p>
+  <br>
+  <a th:href="@{/productos/tienda}" class="btn btn-primary">Volver al inicio</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+server:
+  port: 9009
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
+  use-forward-headers: true
+  forward-headers-strategy: framework
+  tomcat:
+    remoteip:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
+      internal-proxies: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.\168\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}
+
+mercadopago:
+  access-token: APP_USR-4774381420488422-081816-e3c73a2a9bee076db0cbbd04c27b1ff4-2631277155
+  api-url: https://api.mercadopago.com
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/bd_tienda_alesstore
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    open-in-view: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${correo.from}
+    password: ${MAIL_PASSWORD}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+correo:
+  admin: crearveint@gmail.com
+  from: crearveint@gmail.com
+
+error:
+  include-message: always
+  include-binding-errors: always
+  include-stacktrace: on_trace_param
+  include-exception: false
+
+app:
+  baseUrlCloudaflare: "https://oklahoma-prevention-publication-bunch.trycloudflare.com/"
+
+logging:
+  level:
+    root: INFO
+    com.ceqb.SistemaVentaDispositivos2025: DEBUG
+    org.springframework.web: INFO
+    org.springframework.messaging: INFO
+    org.hibernate.orm.connections.pooling: ERROR

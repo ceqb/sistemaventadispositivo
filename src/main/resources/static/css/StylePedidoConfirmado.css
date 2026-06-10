@@ -1,0 +1,18 @@
+body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding-top: 50px;
+    }
+    .container {
+        width: 80%;
+        margin: auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    .success {
+        color: green;
+    }
+    h1 {
+        color: #4CAF50;
+  }

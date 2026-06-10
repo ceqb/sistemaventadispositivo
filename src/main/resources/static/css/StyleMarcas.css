@@ -1,0 +1,105 @@
+body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Layout Móvil (Flexbox) */
+        .wrapper {
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden; /* Evita el scroll horizontal accidental */
+        }
+        .main-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background-color: #1f2937;
+            color: #d1d5db;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .main-sidebar.mobile-open {
+            transform: translateX(0);
+        }
+        .content-wrapper {
+            flex-grow: 1;
+            padding: 1.5rem;
+            margin-left: 0;
+            transition: margin-left 0.3s ease-in-out;
+        }
+        .main-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: #ffffff;
+            padding: 1rem 1.5rem;
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+         /* === CORRECCIÓN CLAVE PARA ESCRITORIO (>= 768px) usando CSS Grid === */
+                @media (min-width: 768px) {
+                    .wrapper {
+                        /* Usamos Grid para definir una columna fija (sidebar) y una columna flexible (contenido) */
+                        display: grid;
+                        grid-template-columns: 280px 1fr;
+                        width: 100%;
+                    }
+                    .main-sidebar {
+                                   transform: translateX(0);
+                                   /* La hacemos estática para que entre en el flujo del Grid */
+                                   position: static;
+                                   height: auto; /* Permite que la altura se ajuste al contenido o al viewport si es necesario */
+                               }
+                    .content-wrapper {
+                        /* El margen ya no es necesario, ya que Grid maneja la posición */
+                        margin-left: 0;
+                        /* El header de escritorio no necesita sticky */
+                    }
+                    .main-header {
+                        position: static;
+                        border-radius: 0;
+                    }
+                }
+
+        .dataTables_wrapper > .row:last-child,
+        .dataTables_wrapper > div:last-child {
+            @apply flex flex-col sm:flex-row items-center justify-between mt-4;
+        }
+        .dataTables_info {
+            @apply text-sm text-gray-700 font-normal mb-4 sm:mb-0;
+        }
+        .dataTables_length, .dataTables_filter {
+            @apply flex items-center mb-4;
+        }
+        .dataTables_filter input, .dataTables_length select {
+            @apply rounded-lg border border-gray-300 p-2 ml-2 text-sm focus:ring-indigo-500 focus:border-indigo-500 shadow-sm;
+        }
+        .dataTables_paginate {
+            @apply flex items-center space-x-1;
+        }
+        .dataTables_paginate .paginate_button {
+            @apply inline-flex items-center px-4 py-2 border text-sm font-semibold rounded-lg transition-colors shadow-sm;
+            display: inline-flex !important;
+        }
+        .dataTables_paginate .paginate_button.current,
+        .dataTables_paginate .paginate_button.current:hover {
+            @apply bg-indigo-600 text-white border-indigo-600 shadow-md;
+        }
+        .dataTables_paginate .paginate_button:not(.current) {
+            @apply bg-white text-gray-700 border-gray-300 hover:bg-indigo-50 hover:text-indigo-700;
+        }
+        .dataTables_paginate .paginate_button.disabled {
+            @apply opacity-50 cursor-not-allowed bg-white text-gray-400 hover:bg-white;
+        }
+        #tablaMarcas thead th {
+             @apply bg-gray-100 text-gray-700 font-bold border-b-2 border-indigo-500;
+        }

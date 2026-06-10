@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Usuario</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fuente e íconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a2e0c0a36e.js" crossorigin="anonymous"></script>
+    <link rel="icon" type="image/x-icon" th:href="@{/Adminlte/img/favicon.ico}">
+    <style>
+        body {
+          font-family: 'Roboto', sans-serif;
+          background: linear-gradient(to right, #1d4ed8, #3b82f6);
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 mx-4">
+    <div class="text-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2 flex justify-center items-center gap-2">
+            <i class="fas fa-user-plus text-blue-600"></i> Crear Cuenta
+        </h2>
+        <p class="text-gray-500">Completa tus datos para registrarte</p>
+    </div>
+
+    <!-- Mensajes -->
+    <p th:if="${registroExitoso}" th:text="${registroExitoso}" class="bg-green-100 text-green-700 p-3 rounded-lg text-sm mb-4 text-center"></p>
+    <p th:if="${errorRegistro}" th:text="${errorRegistro}" class="bg-red-100 text-red-700 p-3 rounded-lg text-sm mb-4 text-center"></p>
+
+    <!-- Formulario
+    <form th:action="@{/registrar}" th:object="${usuarioDTO}" method="post" class="space-y-4">
+
+        <div class="relative">
+            <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" th:field="*{usuario}" placeholder="Usuario"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   required>
+        </div>
+
+        <div class="relative">
+            <i class="fas fa-signature absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" th:field="*{nombre}" placeholder="Nombre completo"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   required>
+        </div>
+
+        <div class="relative">
+            <i class="fas fa-envelope absolute left-3 top-3 text-gray-400"></i>
+            <input type="email" th:field="*{correo}" placeholder="Correo electrónico"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   required>
+        </div>
+
+        <div class="relative">
+            <i class="fas fa-key absolute left-3 top-3 text-gray-400"></i>
+            <input type="password" th:field="*{clave}" placeholder="Contraseña"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   required>
+        </div>
+
+        <div class="relative">
+            <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+            <input type="password" name="confirmarClave" placeholder="Reconfirmar contraseña"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                   required>
+        </div>
+
+        <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow transition-all duration-200">
+            <i class="fas fa-user-plus mr-2"></i> Registrar
+        </button>
+    </form>-->
+    <form th:action="@{/registrar}" th:object="${usuarioDTO}" method="post" class="space-y-4">
+
+        <div class="relative">
+            <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" th:field="*{usuario}" placeholder="Usuario"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            <small th:if="${#fields.hasErrors('usuario')}"
+                   th:errors="*{usuario}" class="error"></small>
+        </div>
+
+        <div class="relative">
+            <i class="fas fa-signature absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" th:field="*{nombre}" placeholder="Nombre completo"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            <small th:if="${#fields.hasErrors('nombre')}"
+                   th:errors="*{nombre}" class="error"></small>
+        </div>
+
+        <div class="relative">
+            <i class="fas fa-envelope absolute left-3 top-3 text-gray-400"></i>
+            <input type="email" th:field="*{correo}" placeholder="Correo electrónico"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            <small th:if="${#fields.hasErrors('correo')}"
+                   th:errors="*{correo}" class="error"></small>
+        </div>
+
+        <div class="relative">
+            <i class="fas fa-key absolute left-3 top-3 text-gray-400"></i>
+            <input type="password" th:field="*{clave}" placeholder="Contraseña"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+            <small th:if="${#fields.hasErrors('clave')}"
+                   th:errors="*{clave}" class="error"></small>
+        </div>
+
+        <div class="relative">
+            <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+            <input type="password" name="confirmarClave" placeholder="Confirmar contraseña"
+                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+        </div>
+
+        <div th:if="${errorRegistro}" class="error" th:text="${errorRegistro}"></div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow transition-all duration-200"><i class="fas fa-user-plus mr-2"></i>Registrar</button>
+    </form>
+
+    <p class="text-center text-sm text-gray-600 mt-6">
+        ¿Ya tienes una cuenta?
+        <a th:href="@{/login}" class="text-blue-600 hover:underline font-semibold">
+            Inicia sesión aquí
+        </a>
+    </p>
+</div>
+</body>
+</html>

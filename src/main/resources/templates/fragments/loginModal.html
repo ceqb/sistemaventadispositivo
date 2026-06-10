@@ -1,0 +1,51 @@
+<div th:fragment="loginModal" xmlns:th="http://www.thymeleaf.org">>
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" onclick="hideLoginModal()">&times;</span>
+
+            <div class="login-container">
+                <h2 class="text-2xl font-bold mb-4 text-center text-gray-800">
+                    <i class="fas fa-lock text-gray-600"></i> Iniciar Sesión
+                </h2>
+
+                <form th:action="@{/login}" method="post">
+                    <input type="hidden" name="redirectUrl" id="redirectUrl">
+
+                    <div class="relative mb-4">
+                        <i class="fas fa-user login-icon"></i>
+                        <input type="text" id="nombre" name="nombre"
+                               placeholder="Usuario" class="login-input" required>
+                    </div>
+
+                    <div class="relative mb-4">
+                        <i class="fas fa-key login-icon"></i>
+                        <input type="password" id="clave" name="clave"
+                               placeholder="Contraseña" class="login-input" required>
+                    </div>
+
+                    <button type="submit"
+                            class="w-full bg-blue-600 text-white font-bold rounded-full py-2 hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+                    </button>
+                </form>
+
+                <p class="text-center mt-4 text-sm text-gray-600">
+                    <a th:href="@{/password/forgot}"
+                       class="text-sm text-gray-600 hover:text-blue-600 hover:underline transition-colors">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </p>
+
+                <p th:if="${error}" th:text="${error}"
+                   class="text-red-500 text-sm mt-2 text-center"></p>
+
+                <p class="text-center mt-4 text-sm text-gray-600">
+                    ¿No tienes un usuario?
+                    <a th:href="@{/registrar}" class="text-blue-600 hover:underline">
+                        Regístrate aquí.
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

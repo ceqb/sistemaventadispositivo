@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alesstore - Tienda Online | Categorías</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" th:href="@{/Adminlte/img/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/StyleCategorias.css}" />
+
+</head>
+
+<body>
+
+<div class="wrapper min-h-screen bg-[#f8fafc] flex flex-col lg:flex-row">
+
+    <div id="sidebarOverlay" onclick="toggleAdminSidebar()" class="fixed inset-0 bg-[#0f172a]/40 z-[60] hidden backdrop-blur-sm lg:hidden transition-all"></div>
+
+    <aside id="adminSidebar"
+           class="fixed inset-y-0 left-0 w-72 bg-[#0f172a] text-gray-300 z-[70]
+              -translate-x-full lg:translate-x-0 lg:sticky lg:top-0
+              transition-transform duration-300 ease-in-out
+              overflow-y-auto no-scrollbar rounded-r-[2.5rem] lg:rounded-none">
+
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-10">
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-bolt text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter text-white italic">ALES<span class="text-blue-500 not-italic">STORE</span></span>
+                </a>
+                <button onclick="toggleAdminSidebar()" class="lg:hidden text-gray-400 p-2 hover:bg-white/10 rounded-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-4 mb-8 bg-white/5 backdrop-blur-md rounded-[1.5rem] border border-white/10 shadow-inner">
+                <div class="flex items-center space-x-4">
+                    <img th:src="@{/AdminLTE/dist/img/user02-160x160.jpg}" class="w-10 h-10 rounded-xl border-2 border-blue-500/50" alt="User">
+                    <div class="overflow-hidden">
+                        <p th:text="${usuarioLogueado?.nombre}" class="font-bold text-sm text-white truncate">Admin</p>
+                        <p class="text-[9px] font-black text-blue-400 tracking-widest uppercase">En línea</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="space-y-8">
+                <ul class="space-y-2">
+                    <li>
+                        <a th:href="@{/admin/dashboard}" class="flex items-center space-x-3 px-4 py-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-600/20 font-bold text-sm transition-all active:scale-95">
+                            <i class="fa fa-tachometer-alt"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Mantenimiento</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/tienda}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fas fa-shop mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Tienda
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/categorias}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-archive mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Categorías
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/marcas}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-tags mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Marcas
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/productos}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-cubes mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Productos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Logística</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/pedidosAdmin/historialAdmin}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-address-card mr-3 text-gray-500 group-hover:text-yellow-400 transition-colors"></i> Pedidos
+                                </div>
+                                <span th:if="${retrasadosCount > 0}" th:text="${retrasadosCount}"
+                                      class="bg-red-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg animate-pulse">0</span>
+                            </a>
+                        </li>
+
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador' or usuarioLogueado.nombreCargo == 'Repartidor'}">
+                            <a th:href="@{/pedidosAdmin/disponibles}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-box-open mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Disponibles
+                                </div>
+                                <span th:if="${pedidosPendientesCount > 0}" th:text="${pedidosPendientesCount}"
+                                      class="bg-blue-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg shadow-lg shadow-blue-500/40">0</span>
+                            </a>
+                        </li>
+
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador'}">
+                            <a th:href="@{/pedidosAdmin/entregasCompletadas}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-clipboard-check mr-3 text-gray-500 group-hover:text-green-400 transition-colors"></i> Completadas
+                                </div>
+                                <span th:if="${entregasCompletadasCount > 0}" th:text="${entregasCompletadasCount}"
+                                      class="bg-green-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg shadow-lg shadow-green-500/40">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Comunidad</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/comprador/lista}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-users mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Compradores
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/proveedores}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-truck mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Proveedores
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/empleados}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-user-plus mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Empleados
+                            </a>
+                        </li>
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador'}">
+                            <a th:href="@{/admin/usuarios}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-user-circle mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Cuentas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="pt-6 border-t border-white/5">
+                    <a th:href="@{/logout}" class="flex items-center justify-center space-x-2 px-4 py-4 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-[1.5rem] font-black text-xs transition-all active:scale-95 shadow-lg shadow-rose-500/5">
+                        <i class="fa fa-sign-out-alt"></i>
+                        <span class="tracking-widest">CERRAR SESIÓN</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-grow w-full overflow-hidden">
+        <header class="lg:hidden bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+            <button onclick="toggleAdminSidebar()" class="w-10 h-10 bg-gray-50 flex items-center justify-center rounded-xl text-gray-600 active:scale-95"><i class="fas fa-bars"></i></button>
+            <span class="text-xl font-black italic">ALES<span class="text-blue-600">STORE</span></span>
+            <img th:src="@{/AdminLTE/dist/img/user02-160x160.jpg}" class="w-10 h-10 rounded-full border border-gray-100">
+        </header>
+
+        <div class="p-4 md:p-8 lg:p-12">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">Categorías</h1>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-widest mt-1">Gestión de Inventario</p>
+                </div>
+                <a th:href="@{/categorias/nueva}" class="flex items-center justify-center gap-3 px-6 py-4 bg-[#0f172a] text-white rounded-2xl hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/10 active:scale-95 text-xs font-black uppercase tracking-widest">
+                    <i class="fa fa-plus"></i> <span>Nueva Categoría</span>
+                </a>
+            </div>
+
+            <div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+                <div class="hidden lg:grid lg:grid-cols-12 px-8 py-5 border-b border-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                    <div class="lg:col-span-1">ID</div>
+                    <div class="lg:col-span-6">Nombre Categoría</div>
+                    <div class="lg:col-span-2 text-center">Estado</div>
+                    <div class="lg:col-span-3 text-right">Acciones</div>
+                </div>
+
+                <div class="divide-y divide-gray-50">
+                    <div th:each="cat, iter : ${categorias}"
+                         class="group p-6 lg:px-8 lg:py-5 flex flex-col lg:grid lg:grid-cols-12 gap-5 lg:gap-0 hover:bg-blue-50/40 transition-all">
+
+                        <div class="lg:col-span-9 flex items-center justify-between">
+
+                            <div class="flex items-center gap-4">
+                                <span class="hidden lg:block w-8 text-[10px] font-black text-gray-300" th:text="${iter.index + 1}">1</span>
+                                <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:bg-blue-100 group-hover:text-blue-600 transition-all">
+                                    <i class="fas fa-folder-open"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-800" th:text="${cat.nombreCategoria}">Nombre</p>
+                                    <span class="lg:hidden text-[9px] font-black text-gray-400 uppercase tracking-tighter" th:text="'ID: ' + ${iter.index + 1}">ID: 1</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center">
+                                <div th:if="${cat.estado}" class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100">
+                                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                    <span class="text-[9px] font-black uppercase tracking-widest">Activo</span>
+                                </div>
+                                <div th:unless="${cat.estado}" class="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 text-gray-400 rounded-full border border-gray-100">
+                                    <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+                                    <span class="text-[9px] font-black uppercase tracking-widest">Inactivo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-3 flex items-center justify-start lg:justify-end gap-2 pt-4 lg:pt-0 border-t lg:border-none border-gray-50">
+                            <a th:href="@{/categorias/editar/{id}(id=${cat.id})}"
+                               class="flex-1 lg:flex-none h-11 lg:w-9 lg:h-9 flex items-center justify-center bg-gray-50 lg:bg-white border border-gray-100 rounded-xl text-amber-500 hover:bg-amber-500 hover:text-white transition-all active:scale-95 shadow-sm">
+                                <i class="fa fa-pencil text-xs"></i>
+                                <span class="lg:hidden ml-2 text-[10px] font-black uppercase tracking-widest">Editar</span>
+                            </a>
+                            <a th:href="@{/categorias/estado/{id}(id=${cat.id})}"
+                               th:classappend="${cat.estado} ? 'text-rose-500 hover:bg-rose-500' : 'text-emerald-500 hover:bg-emerald-500'"
+                               class="flex-1 lg:flex-none h-11 lg:w-9 lg:h-9 flex items-center justify-center bg-gray-50 lg:bg-white border border-gray-100 rounded-xl hover:text-white transition-all active:scale-95 shadow-sm">
+                                <i th:class="${cat.estado} ? 'fa fa-eye-slash text-xs' : 'fa fa-eye text-xs'"></i>
+                                <span class="lg:hidden ml-2 text-[10px] font-black uppercase tracking-widest" th:text="${cat.estado ? 'Baja' : 'Alta'}"></span>
+                            </a>
+                            <a th:href="@{/categorias/eliminar/{id}(id=${cat.id})}"
+                               class="h-11 w-11 lg:w-9 lg:h-9 flex items-center justify-center bg-gray-50 lg:bg-white border border-gray-100 rounded-xl text-gray-400 hover:bg-gray-900 hover:text-white transition-all shadow-sm">
+                                <i class="fa fa-trash text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<footer class="mt-auto w-full px-4 md:px-8 lg:px-12 pb-8">
+    <div class="bg-white/70 backdrop-blur-xl border border-gray-100 rounded-[2rem] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.02)]">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+
+            <div class="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
+                <div class="w-10 h-10 bg-[#0f172a] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/10">
+                    <i class="fas fa-code text-white text-xs"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Desarrollado por</p>
+                    <p class="text-sm font-bold text-gray-800">
+                        &copy; 2026 <a href="#" class="text-blue-600 hover:text-[#0f172a] transition-colors">CREARVEINT</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center items-center gap-4 md:gap-8">
+                <div class="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
+                    <div class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest text-nowrap">Sistema Activo</span>
+                </div>
+
+                <div class="hidden md:block h-8 w-[1px] bg-gray-100"></div>
+
+                <div class="text-center md:text-right">
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Alesstore v3.0</p>
+                    <p class="text-[9px] font-medium text-gray-400 mt-1">Todos los derechos reservados</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</footer>
+<!-- jQuery (requerido por DataTables) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:src="@{/js/notificaciones.js}"></script>
+<!-- JS global para el dashboard -->
+<script th:src="@{/adminlte/custom/main-admin.js}"></script>
+
+<!--NOTIFICACIONES -->
+<script th:inline="javascript">
+    window.pedidosPendientesCount = [[${pedidosPendientesCount}]];
+    window.entregasCompletadasCount = [[${entregasCompletadasCount}]];
+</script>
+<style>
+    @keyframes fade-in-out {
+        0% { opacity: 0; transform: translateY(-10px); }
+        10% { opacity: 1; transform: translateY(0); }
+        90% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+    .animate-fade-in-out {
+        animation: fade-in-out 4s forwards;
+    }
+</style>
+<!--FIN NOTIFICACIONES -->
+
+<script>
+    function toggleAdminSidebar() {
+        const sidebar = document.getElementById('adminSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        // Si el sidebar está oculto, lo muestra
+        if (sidebar.classList.contains('-translate-x-full')) {
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        }
+    }
+</script>
+
+</body>
+</html>

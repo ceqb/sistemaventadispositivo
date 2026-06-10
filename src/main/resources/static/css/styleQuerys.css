@@ -1,0 +1,68 @@
+/* Estilos generales para imágenes */
+.carrito-img {
+  max-width: 140px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Caja de cantidad */
+.cantidad-box {
+  min-width: 60px;
+  text-align: center;
+  font-weight: bold;
+  height: 38px;
+  line-height: 26px;
+}
+
+/* 🔹 Responsive tabla en móviles 🔹 */
+/* Los siguientes estilos SÓLO se aplican en pantallas de 768px o menos */
+@media (max-width: 768px) {
+  .table thead {
+    display: none; /* Oculta la cabecera de la tabla */
+  }
+
+  .table tr {
+    display: block;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 1rem;
+  }
+
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem;
+    font-size: 0.95rem;
+  }
+/* Centra la imagen y el label al principio de la columna */
+  .table td:first-child {
+    display: block;
+    text-align: center;
+  }
+  .table td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    flex: 1;
+    text-align: left; /* Alinea los data-label a la izquierda */
+    max-width: 45%;
+    color: #444;
+  }
+
+  /* Centrar la imagen en la vista móvil */
+  .table td img {
+    display: block;
+    margin: 0 auto;
+    max-width: 80px;
+    height: auto;
+  }
+
+  /* Centrar el botón eliminar en la vista móvil */
+  .table td form {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+}

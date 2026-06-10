@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Pedidos - Administrador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" th:href="@{/Adminlte/img/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/StyleHistorial.css}" />
+
+</head>
+<body>
+<div class="wrapper min-h-screen bg-[#f8fafc] flex flex-col lg:flex-row">
+    <div id="sidebarOverlay" onclick="toggleAdminSidebar()" class="fixed inset-0 bg-[#0f172a]/40 z-[60] hidden backdrop-blur-sm lg:hidden"></div>
+    <!-- PANEL ADMINISTRATIVO -->
+    <aside id="adminSidebar"
+           class="fixed inset-y-0 left-0 w-72 bg-[#0f172a] text-gray-300 z-[70]
+              -translate-x-full lg:translate-x-0 lg:sticky lg:top-0
+              transition-transform duration-300 ease-in-out
+              overflow-y-auto no-scrollbar rounded-r-[2.5rem] lg:rounded-none">
+
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-10">
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-bolt text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter text-white italic">ALES<span class="text-blue-500 not-italic">STORE</span></span>
+                </a>
+                <button onclick="toggleAdminSidebar()" class="lg:hidden text-gray-400 p-2 hover:bg-white/10 rounded-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-4 mb-8 bg-white/5 backdrop-blur-md rounded-[1.5rem] border border-white/10 shadow-inner">
+                <div class="flex items-center space-x-4">
+                    <img th:src="@{/AdminLTE/dist/img/user02-160x160.jpg}" class="w-10 h-10 rounded-xl border-2 border-blue-500/50" alt="User">
+                    <div class="overflow-hidden">
+                        <p th:text="${usuarioLogueado?.nombre}" class="font-bold text-sm text-white truncate">Admin</p>
+                        <p class="text-[9px] font-black text-blue-400 tracking-widest uppercase">En línea</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="space-y-8">
+                <ul class="space-y-2">
+                    <li>
+                        <a th:href="@{/admin/dashboard}" class="flex items-center space-x-3 px-4 py-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-600/20 font-bold text-sm transition-all active:scale-95">
+                            <i class="fa fa-tachometer-alt"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Mantenimiento</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/tienda}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fas fa-shop mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Tienda
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/categorias}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-archive mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Categorías
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/marcas}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-tags mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Marcas
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/productos}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-cubes mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Productos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Logística</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/pedidosAdmin/historialAdmin}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-address-card mr-3 text-gray-500 group-hover:text-yellow-400 transition-colors"></i> Pedidos
+                                </div>
+                                <span th:if="${retrasadosCount > 0}" th:text="${retrasadosCount}"
+                                      class="bg-red-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg animate-pulse">0</span>
+                            </a>
+                        </li>
+
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador' or usuarioLogueado.nombreCargo == 'Repartidor'}">
+                            <a th:href="@{/pedidosAdmin/disponibles}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-box-open mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Disponibles
+                                </div>
+                                <span th:if="${pedidosPendientesCount > 0}" th:text="${pedidosPendientesCount}"
+                                      class="bg-blue-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg shadow-lg shadow-blue-500/40">0</span>
+                            </a>
+                        </li>
+
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador'}">
+                            <a th:href="@{/pedidosAdmin/entregasCompletadas}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-clipboard-check mr-3 text-gray-500 group-hover:text-green-400 transition-colors"></i> Completadas
+                                </div>
+                                <span th:if="${entregasCompletadasCount > 0}" th:text="${entregasCompletadasCount}"
+                                      class="bg-green-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg shadow-lg shadow-green-500/40">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Comunidad</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/comprador/lista}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-users mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Compradores
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/proveedores}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-truck mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Proveedores
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/empleados}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-user-plus mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Empleados
+                            </a>
+                        </li>
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador'}">
+                            <a th:href="@{/admin/usuarios}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-user-circle mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Cuentas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="pt-6 border-t border-white/5">
+                    <a th:href="@{/logout}" class="flex items-center justify-center space-x-2 px-4 py-4 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-[1.5rem] font-black text-xs transition-all active:scale-95 shadow-lg shadow-rose-500/5">
+                        <i class="fa fa-sign-out-alt"></i>
+                        <span class="tracking-widest">CERRAR SESIÓN</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- FIN PANEL ADMINISTRATIVO -->
+    <main class="flex-grow w-full overflow-hidden flex flex-col">
+
+        <header  class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 md:px-8 shrink-0 z-40">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminSidebar()" class="md:hidden p-3 bg-slate-50 rounded-xl text-slate-600">
+                    <i class="fa fa-bars text-lg"></i>
+                </button>
+                <div class="hidden md:flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-400">
+                    <span>Admin</span>
+                    <i class="fa fa-chevron-right text-[8px] text-slate-300"></i>
+                    <span class="text-slate-900">Gestion de pedidos</span>
+                </div>
+            </div>
+
+            <div class="relative items-center gap-3 md:gap-4 flex">
+                <button onclick="toggleUserDropdown()" class="flex items-center gap-3 md:gap-4 focus:outline-none group">
+                    <div class="hidden sm:block text-right">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Sesión iniciada</p>
+                        <div class="flex items-center justify-end gap-1">
+                            <p class="text-sm font-black text-slate-900 tracking-tight" th:text="${usuarioLogueado.nombre}">Admin</p>
+                            <i class="fa fa-chevron-down text-[8px] text-slate-400 group-hover:text-blue-600 transition-colors"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-11 h-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:border-blue-500 transition-all duration-300">
+                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+                        <i class="fa fa-user text-blue-600 text-sm"></i>
+                    </div>
+                </button>
+
+                <div id="userDropdown" class="hidden absolute right-0 top-full mt-3 w-56 bg-white rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden z-50 animate-fade-in">
+                    <div class="p-5 border-b border-slate-50 bg-slate-50/50">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cuenta</p>
+                        <p class="text-xs font-bold text-slate-700 truncate" th:text="${usuarioLogueado.correo}">admin@tienda.com</p>
+                    </div>
+
+                    <div class="p-2">
+                        <a th:href="@{/admin/perfil}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all group">
+                            <i class="fa fa-id-card text-slate-400 group-hover:text-blue-600"></i>
+                            Mi Perfil
+                        </a>
+                        <a th:href="@{/admin/configuracion}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all group">
+                            <i class="fa fa-cog text-slate-400 group-hover:text-blue-600"></i>
+                            Ajustes
+                        </a>
+                    </div>
+
+                    <div class="p-2 border-t border-slate-50 bg-slate-50/30">
+                        <a th:href="@{/logout}" class="flex items-center gap-3 px-4 py-3 text-xs font-black text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+                            <i class="fa fa-sign-out-alt"></i>
+                            CERRAR SESIÓN
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+            <div class="w-full">
+
+            <div class="mb-8 px-4">
+                <div class="flex items-center gap-2 text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em] mb-2">
+                    <span class="w-8 h-[2px] bg-emerald-600"></span> Registro Global
+                </div>
+                <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Historial de Pedidos</h1>
+            </div>
+
+            <section class="bg-white rounded-[2.5rem] border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.03)] overflow-hidden">
+
+                <div class="hidden lg:grid lg:grid-cols-12 px-8 py-5 border-b border-gray-50 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] bg-gray-50/30">
+                    <div class="lg:col-span-2">N° Pedido</div>
+                    <div class="lg:col-span-3">Cliente & Repartidor</div>
+                    <div class="lg:col-span-2 text-center">Total</div>
+                    <div class="lg:col-span-2 text-center">Estado Pago</div>
+                    <div class="lg:col-span-1 text-center">Envío</div>
+                    <div class="lg:col-span-2 text-right">Acciones</div>
+                </div>
+
+                <div class="divide-y divide-gray-50">
+                    <div th:if="${pedidos.isEmpty()}" class="p-20 text-center flex flex-col items-center">
+                        <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-200">
+                            <i class="fa fa-box-open text-4xl"></i>
+                        </div>
+                        <p class="text-sm font-black text-slate-400 uppercase tracking-widest" >Sin historial pendiente</p>
+                    </div>
+
+                    <div th:each="pedido, iter : ${pedidos}"
+                         class="group p-6 lg:px-8 lg:py-4 flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-0 hover:bg-blue-50/40 transition-all items-center">
+
+                        <div class="lg:col-span-2 flex items-center justify-center lg:justify-start w-full">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 bg-slate-900 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform shrink-0">
+                                    <i class="fas fa-box text-white text-xs"></i>
+                                </div>
+                                <div class="truncate">
+                                    <p class="text-sm font-black text-gray-900" th:text="${pedido.numeroPedido}">#001</p>
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase">Documento ID</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-3 w-full">
+                            <div class="text-center lg:text-left">
+                                <p class="text-sm font-black text-gray-900 leading-tight truncate" th:text="${pedido.usuarioNombre}">Cliente Nombre</p>
+                                <div class="flex items-center justify-center lg:justify-start gap-1.5 mt-0.5">
+                                    <i class="fas fa-truck text-[9px] text-blue-500"></i>
+                                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest truncate" th:text="${pedido.repartidorNombre ?: 'Sin asignar'}">Repartidor</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 w-full flex flex-col items-center justify-center">
+                            <span class="lg:hidden text-[8px] font-black text-gray-400 uppercase mb-1">Total a Pagar</span>
+                            <span class="text-sm lg:text-[14px] font-black text-gray-900" th:text="${'S/ ' + #numbers.formatDecimal(pedido.total, 0, 'COMMA', 2, 'POINT')}">S/ 0.00</span>
+                        </div>
+
+                        <div class="lg:col-span-2 w-full flex flex-col items-center justify-center">
+                            <span class="lg:hidden text-[8px] font-black text-gray-400 uppercase mb-1">Finanzas</span>
+                            <span class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border transition-colors"
+                                  th:classappend="${pedido.estadoPago == 'APROBADO' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-rose-50 text-rose-600 border-rose-100'}"
+                                  th:text="${pedido.estadoPago}">
+                            </span>
+                        </div>
+
+                        <div class="lg:col-span-1 w-full flex flex-col items-center justify-center py-2 lg:py-0">
+                            <span class="lg:hidden text-[8px] font-black text-gray-400 uppercase mb-1">Logística</span>
+
+                            <div class="flex flex-col items-center">
+                                <span class="text-[10px] font-black text-slate-700 flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full animate-pulse"
+                                          th:classappend="${pedido.estadoPedido.name() == 'CREADO' ? 'bg-amber-500' : 'bg-blue-500'}"></span>
+                                    <span th:text="${pedido.estadoPedido.label}">Estado</span>
+                                </span>
+
+                                <div th:if="${pedido.estadoPedido.name() == 'CREADO'}"
+                                     class="mt-1.5 flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-100 rounded-lg shadow-sm shadow-amber-500/10">
+                                    <i class="far fa-clock text-[9px] text-amber-500"></i>
+                                    <span th:id="'timer-' + ${pedido.id}"
+                                          th:data-fecha="${pedido.fechaPedido}"
+                                          class="text-[10px] font-black text-amber-600 tracking-tighter">
+                                        30:00
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 w-full flex items-center justify-center lg:justify-end gap-2 pt-4 lg:pt-0 border-t lg:border-none border-gray-50">
+                            <a th:href="@{/pedidosAdmin/detalle(id=${pedido.id})}"
+                               class="flex-1 lg:flex-none h-10 lg:w-9 lg:h-9 flex items-center justify-center bg-[#0f172a] text-white rounded-xl shadow-md hover:bg-blue-600 transition-all hover:-translate-y-1">
+                                <i class="fa fa-eye text-xs"></i>
+                                <span class="lg:hidden ml-2 text-[10px] font-black uppercase">Ver</span>
+                            </a>
+
+                            <form th:action="@{/pedidosAdmin/{id}/cancelar(id=${pedido.id})}" method="post"
+                                  th:if="${pedido.estadoPedido.name() == 'CREADO'}"
+                                  class="flex-1 lg:flex-none"
+                                  onsubmit="return confirm('¿Cancelar pedido?');">
+                                <button type="submit"
+                                        class="w-full h-10 lg:w-9 lg:h-9 flex items-center justify-center bg-rose-500 text-white rounded-xl shadow-md hover:bg-rose-600 transition-all hover:-translate-y-1">
+                                    <i class="fa fa-trash text-xs"></i>
+                                    <span class="lg:hidden ml-2 text-[10px] font-black uppercase">Cancelar</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-8 bg-gray-50/30 border-t border-gray-50 flex justify-center lg:justify-between items-center">
+                    <p class="hidden lg:block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                        Alesstore Logistics Tracking 2026
+                    </p>
+                </div>
+            </section>
+
+            <div class="mt-6 flex items-center justify-center lg:hidden text-slate-400 gap-2 animate-bounce">
+                <i class="fa fa-hand-pointer text-xs"></i>
+                <span class="text-[10px] font-black uppercase tracking-widest">Desliza para ver más detalles</span>
+            </div>
+        </div>
+        </div>
+    </main>
+
+</div>
+<footer class="bg-white text-gray-600 p-4 text-center text-sm shadow-inner w-full">
+    <strong>&copy; 2023 <a href="#" class="text-blue-600 hover:underline">CREARVEINT</a>.</strong> Todos los derechos reservados.
+</footer>
+<script th:inline="javascript">
+    window.pedidosPendientesCount = [[${pedidosPendientesCount}]];
+    window.entregasCompletadasCount = [[${entregasCompletadasCount}]];
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:src="@{/js/notificaciones.js}"></script>
+
+<script th:src="@{/adminlte/custom/main-admin.js}"></script>
+<style>
+    @keyframes fade-in-out {
+        0% { opacity: 0; transform: translateY(-10px); }
+        10% { opacity: 1; transform: translateY(0); }
+        90% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+    .animate-fade-in-out {
+        animation: fade-in-out 4s forwards;
+    }
+</style>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Buscamos todos los elementos que comiencen con "timer-"
+        const timers = document.querySelectorAll("[id^='timer-']");
+        console.log("🔍 [SISTEMA] Cronómetros detectados en esta vista:", timers.length);
+
+        timers.forEach(span => {
+            const fechaString = span.dataset.fecha;
+
+            // Si no hay fecha, no iniciamos el reloj
+            if (!fechaString || fechaString === "null" || fechaString === "") {
+                console.warn("⚠️ [SISTEMA] Pedido " + span.id + " no tiene fecha válida.");
+                span.innerText = "--:--";
+                return;
+            }
+
+            const fechaInicio = new Date(fechaString);
+            const tiempoObjetivo = new Date(fechaInicio.getTime() + (30 * 60 * 1000)); // 30 min exactos
+
+            const interval = setInterval(() => {
+                const ahora = new Date();
+                const diff = tiempoObjetivo - ahora;
+
+                // Cuando el tiempo se agota
+                if (diff <= 0) {
+                    clearInterval(interval);
+                    span.innerText = "¡Sincronizando!";
+                    span.classList.add("text-blue-500", "animate-pulse", "font-bold");
+
+                    console.log("🚀 [SISTEMA] Tiempo agotado para " + span.id + ". Recargando...");
+
+                    // Esperamos 2 segundos para que el Scheduler de Java termine su trabajo
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                    return;
+                }
+
+                // Formateo MM:SS
+                const totalSegundos = Math.floor(diff / 1000);
+                const mm = String(Math.floor(totalSegundos / 60)).padStart(2, "0");
+                const ss = String(totalSegundos % 60).padStart(2, "0");
+
+                span.innerText = `${mm}:${ss}`;
+            }, 1000);
+        });
+    });
+</script>
+</body>
+</html>

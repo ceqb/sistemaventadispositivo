@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Bodega | Nuevo Producto</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="icon" type="image/x-icon" th:href="@{/Adminlte/img/favicon.ico}">
+    <link th:href="@{/css/StyleNuevoProducto.css}" rel="stylesheet"/>
+
+</head>
+
+<body>
+
+<div class="flex min-h-screen bg-[#f8fafc] font-sans text-slate-900">
+
+    <div id="sidebarOverlay" onclick="toggleAdminSidebar()" class="fixed inset-0 bg-[#0f172a]/40 z-[60] hidden backdrop-blur-sm lg:hidden"></div>
+    <!-- PANEL ADMINISTRATIVO -->
+    <aside id="adminSidebar"
+           class="fixed inset-y-0 left-0 w-72 bg-[#0f172a] text-gray-300 z-[70]
+              -translate-x-full lg:translate-x-0 lg:sticky lg:top-0
+              transition-transform duration-300 ease-in-out
+              overflow-y-auto no-scrollbar rounded-r-[2.5rem] lg:rounded-none">
+
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-10">
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-6 transition-transform">
+                        <i class="fas fa-bolt text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter text-white italic">ALES<span class="text-blue-500 not-italic">STORE</span></span>
+                </a>
+                <button onclick="toggleAdminSidebar()" class="lg:hidden text-gray-400 p-2 hover:bg-white/10 rounded-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="p-4 mb-8 bg-white/5 backdrop-blur-md rounded-[1.5rem] border border-white/10 shadow-inner">
+                <div class="flex items-center space-x-4">
+                    <img th:src="@{/AdminLTE/dist/img/user02-160x160.jpg}" class="w-10 h-10 rounded-xl border-2 border-blue-500/50" alt="User">
+                    <div class="overflow-hidden">
+                        <p th:text="${usuarioLogueado?.nombre}" class="font-bold text-sm text-white truncate">Admin</p>
+                        <p class="text-[9px] font-black text-blue-400 tracking-widest uppercase">En línea</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="space-y-8">
+                <ul class="space-y-2">
+                    <li>
+                        <a th:href="@{/admin/dashboard}" class="flex items-center space-x-3 px-4 py-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-600/20 font-bold text-sm transition-all active:scale-95">
+                            <i class="fa fa-tachometer-alt"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Mantenimiento</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/tienda}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fas fa-shop mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Tienda
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/categorias}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-archive mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Categorías
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/marcas}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-tags mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Marcas
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/productos}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-cubes mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Productos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Logística</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/pedidosAdmin/historialAdmin}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-address-card mr-3 text-gray-500 group-hover:text-yellow-400 transition-colors"></i> Pedidos
+                                </div>
+                                <span th:if="${retrasadosCount > 0}" th:text="${retrasadosCount}"
+                                      class="bg-red-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg animate-pulse">0</span>
+                            </a>
+                        </li>
+
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador' or usuarioLogueado.nombreCargo == 'Repartidor'}">
+                            <a th:href="@{/pedidosAdmin/disponibles}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-box-open mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Disponibles
+                                </div>
+                                <span th:if="${pedidosPendientesCount > 0}" th:text="${pedidosPendientesCount}"
+                                      class="bg-blue-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg shadow-lg shadow-blue-500/40">0</span>
+                            </a>
+                        </li>
+
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador'}">
+                            <a th:href="@{/pedidosAdmin/entregasCompletadas}" class="group flex items-center justify-between px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <div class="flex items-center">
+                                    <i class="fa fa-clipboard-check mr-3 text-gray-500 group-hover:text-green-400 transition-colors"></i> Completadas
+                                </div>
+                                <span th:if="${entregasCompletadasCount > 0}" th:text="${entregasCompletadasCount}"
+                                      class="bg-green-500 text-[10px] font-black text-white px-2 py-0.5 rounded-lg shadow-lg shadow-green-500/40">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] px-4 block mb-4">Comunidad</span>
+                    <ul class="space-y-1">
+                        <li>
+                            <a th:href="@{/comprador/lista}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-users mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Compradores
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/proveedores}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-truck mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Proveedores
+                            </a>
+                        </li>
+                        <li>
+                            <a th:href="@{/admin/empleados}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-user-plus mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Empleados
+                            </a>
+                        </li>
+                        <li th:if="${usuarioLogueado?.nombreCargo == 'Administrador'}">
+                            <a th:href="@{/admin/usuarios}" class="group flex items-center px-4 py-3 text-sm font-semibold hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                                <i class="fa fa-user-circle mr-3 text-gray-500 group-hover:text-blue-400 transition-colors"></i> Cuentas
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="pt-6 border-t border-white/5">
+                    <a th:href="@{/logout}" class="flex items-center justify-center space-x-2 px-4 py-4 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-[1.5rem] font-black text-xs transition-all active:scale-95 shadow-lg shadow-rose-500/5">
+                        <i class="fa fa-sign-out-alt"></i>
+                        <span class="tracking-widest">CERRAR SESIÓN</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center justify-between px-4 md:px-8 shrink-0 z-40">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleAdminSidebar()" class="md:hidden p-3 bg-slate-50 rounded-xl text-slate-600">
+                    <i class="fa fa-bars text-lg"></i>
+                </button>
+                <div class="hidden md:flex items-center gap-3 text-xs font-black uppercase tracking-widest text-slate-400">
+                    <span>Admin</span>
+                    <i class="fa fa-chevron-right text-[8px] text-slate-300"></i>
+                    <span class="text-slate-900" th:text="${producto.id_dpc != null ? 'Editar Producto' : 'Nuevo Producto'}">Nuevo Producto</span>
+                </div>
+            </div>
+
+            <div class="relative items-center gap-3 md:gap-4 flex">
+                <button onclick="toggleUserDropdown()" class="flex items-center gap-3 md:gap-4 focus:outline-none group">
+                    <div class="hidden sm:block text-right">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Sesión iniciada</p>
+                        <div class="flex items-center justify-end gap-1">
+                            <p class="text-sm font-black text-slate-900 tracking-tight" th:text="${usuarioLogueado.nombre}">Admin</p>
+                            <i class="fa fa-chevron-down text-[8px] text-slate-400 group-hover:text-blue-600 transition-colors"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-11 h-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:border-blue-500 transition-all duration-300">
+                        <div class="absolute -top-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+                        <i class="fa fa-user text-blue-600 text-sm"></i>
+                    </div>
+                </button>
+
+                <div id="userDropdown" class="hidden absolute right-0 top-full mt-3 w-56 bg-white rounded-[1.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden z-50 animate-fade-in">
+                    <div class="p-5 border-b border-slate-50 bg-slate-50/50">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Cuenta</p>
+                        <p class="text-xs font-bold text-slate-700 truncate" th:text="${usuarioLogueado.correo}">admin@tienda.com</p>
+                    </div>
+
+                    <div class="p-2">
+                        <a th:href="@{/admin/perfil}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all group">
+                            <i class="fa fa-id-card text-slate-400 group-hover:text-blue-600"></i>
+                            Mi Perfil
+                        </a>
+                        <a th:href="@{/admin/configuracion}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-600 hover:bg-blue-50 hover:text-blue-600 rounded-xl transition-all group">
+                            <i class="fa fa-cog text-slate-400 group-hover:text-blue-600"></i>
+                            Ajustes
+                        </a>
+                    </div>
+
+                    <div class="p-2 border-t border-slate-50 bg-slate-50/30">
+                        <a th:href="@{/logout}" class="flex items-center gap-3 px-4 py-3 text-xs font-black text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+                            <i class="fa fa-sign-out-alt"></i>
+                            CERRAR SESIÓN
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-10 bg-[#f8fafc] custom-scrollbar">
+            <div class="max-w-6xl mx-auto">
+
+                <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                        <div class="flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] mb-2">
+                            <span class="w-8 h-[2px] bg-blue-600"></span> Formulario de Configuración
+                        </div>
+                        <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight"
+                            th:text="${producto.id_dpc != null ? 'Modificar Artículo' : 'Registrar Producto'}">Configurar Producto</h1>
+                    </div>
+                    <a th:href="@{/admin/productos}" class="group flex items-center px-6 py-4 bg-white text-slate-600 rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.15em] border border-slate-200 shadow-sm hover:bg-slate-900 hover:text-white transition-all duration-300">
+                        <i class="fa fa-arrow-left mr-3 group-hover:-translate-x-1 transition-transform"></i> Volver al listado
+                    </a>
+                </div>
+
+                <div class="bg-white rounded-[2.5rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] border border-slate-100 overflow-hidden">
+                    <form th:action="${producto.id_dpc != null}
+                                      ? @{/admin/productos/actualizar/{id}(id=${producto.id_dpc}, returnPage=${returnPage})}
+                                      : @{/admin/productos/guardar(returnPage=${returnPage})}"
+                          th:object="${producto}" method="post" enctype="multipart/form-data">
+
+                        <input type="hidden" th:field="*{id_dpc}" />
+
+                        <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-50">
+
+                            <div class="lg:col-span-5 p-6 md:p-10 space-y-8">
+                                <div class="flex items-center gap-3 pb-4 border-b border-slate-50">
+                                    <i class="fa fa-photo-video text-blue-600"></i>
+                                    <h3 class="text-xs font-black text-slate-900 uppercase tracking-[0.2em]">Recursos Visuales</h3>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Clip Demostrativo</label>
+                                    <div class="relative group h-40">
+                                        <div id="dropzone-video" class="absolute inset-0 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 group-hover:border-blue-400 group-hover:bg-blue-50/50 transition-all duration-300 flex flex-col items-center justify-center p-6 text-center">
+                                            <i id="icon-video" class="fa fa-play-circle text-3xl text-slate-300 group-hover:scale-110 transition-transform mb-2"></i>
+                                            <p id="text-video" class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Subir Video</p>
+                                        </div>
+                                        <input type="file" id="archivoVideo" name="archivoVideo" accept="video/*" onchange="previewVideo(this)" class="relative z-10 w-full h-full opacity-0 cursor-pointer">
+                                    </div>
+                                    <div id="containerPreviewVideo"
+                                         th:classappend="${producto.rutaVideo_dpc != null} ? '!flex' : 'hidden'"
+                                         class="animate-fade-in p-3 bg-emerald-50 rounded-2xl border border-emerald-100 items-center gap-2">
+                                        <i class="fa fa-check-circle text-emerald-500 text-sm"></i>
+                                        <span id="videoName" class="text-[10px] font-black text-emerald-700 truncate"
+                                              th:text="${producto.rutaVideo_dpc != null ? 'Video actual: ' + producto.rutaVideo_dpc : ''}"></span>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Imagen de Portada</label>
+                                    <div class="relative group h-40">
+                                        <div id="dropzone-foto" class="absolute inset-0 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 group-hover:border-blue-400 group-hover:bg-blue-50/50 transition-all duration-300 flex flex-col items-center justify-center p-6 text-center">
+                                            <i id="icon-foto" class="fa fa-camera text-3xl text-slate-300 group-hover:scale-110 transition-transform mb-2"></i>
+                                            <p id="text-foto" class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Subir Portada</p>
+                                        </div>
+                                        <input type="file" id="archivoFoto" name="archivoFoto" onchange="previewPrincipal(this)" class="relative z-10 w-full h-full opacity-0 cursor-pointer">
+                                    </div>
+                                    <div id="containerPreviewPrincipal"
+                                         th:classappend="${producto.rutaFoto_dpc != null} ? '!block' : 'hidden'"
+                                         class="rounded-3xl overflow-hidden border-2 border-slate-100 shadow-lg">
+                                        <img id="imgPreview"
+                                             th:src="${producto.rutaFoto_dpc != null} ? @{'/uploads/' + ${producto.modelo_dpc.replaceAll('\s+', '_')} + '/' + ${producto.rutaFoto_dpc}} : '#'"
+                                             class="w-full h-48 object-cover">
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center px-1">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Galería (Máx 9)</label>
+                                        <span id="countGaleria" class="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg transition-colors duration-500">0/9</span>
+                                    </div>
+
+                                    <div class="h-50 overflow-y-auto pr-2 custom-scrollbar">
+                                        <div class="grid grid-cols-4 gap-3" id="galeriaCompleta">
+
+                                            <!-- Fotos existentes (de la BD) - con opciones eliminar / reemplazar -->
+                                            <th:block th:each="img : ${producto.imagenes}">
+                                                <div class="relative aspect-square group overflow-hidden rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 image-container">
+
+                                                    <!-- Imagen -->
+                                                    <img th:src="@{'/uploads/' + ${producto.modelo_dpc.replaceAll('\s+', '_')} + '/' + ${img}}"
+                                                         class="w-full h-full object-cover"
+                                                         alt="Imagen secundaria">
+
+                                                    <!-- Hidden que SÍ se envía -->
+                                                    <input type="hidden"
+                                                           name="imagenes"
+                                                           th:value="${img}" />
+
+                                                    <!-- Overlay botones -->
+                                                    <div th:if="${producto.id_dpc != null}"
+                                                         class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                                        <div class="flex gap-2">
+                                                            <!-- Eliminar -->
+                                                            <button type="button"
+                                                                    onclick="eliminarImagen(this)"
+                                                                    class="w-9 h-9 flex items-center justify-center bg-red-500/90 hover:bg-red-600 text-white rounded-full shadow-lg transition-all hover:scale-110 active:scale-95">
+                                                                <i class="fas fa-trash-alt text-sm"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </th:block>
+
+                                            <!-- Previsualización de nuevas subidas (incluyendo reemplazos) -->
+                                            <div id="previewGaleria" class="contents"></div>
+
+                                            <!-- Botón + para subir nuevas (al final) -->
+                                            <label id="btn-add-galeria" class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-white hover:border-blue-400 transition-all group">
+                                                <i class="fa fa-plus text-slate-300 group-hover:text-blue-500"></i>
+                                                <span class="hidden text-[8px] font-black mt-1"></span>
+                                                <input type="file" name="archivosImagenes" id="archivoInput" multiple accept="image/*" onchange="previewMultiple(this)" class="hidden">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-7 p-6 md:p-10 space-y-10 bg-slate-50/20">
+                                <div class="flex items-center gap-3 pb-4 border-b border-slate-100">
+                                    <i class="fa fa-sliders-h text-emerald-500"></i>
+                                    <h3 class="text-xs font-black text-slate-900 uppercase tracking-[0.2em]">Especificaciones de Venta</h3>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div class="space-y-3">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Modelo del Producto</label>
+                                        <input pattern="[^/]+" oninput="this.value = this.value.replace(/\//g, ' ')" type="text" th:field="*{modelo_dpc}" required class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-bold text-slate-700">
+
+
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Marca</label>
+                                        <div class="relative">
+                                            <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                <i class="fas fa-chevron-down text-[10px]"></i>
+                                            </div>
+                                            <select th:field="*{id_marca}" required
+                                                    class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-bold text-slate-700 appearance-none cursor-pointer">
+                                                <option value="" disabled selected>Seleccionar Marca...</option>
+                                                <option th:each="m : ${marcas}"
+                                                        th:value="${m.id_marca}"
+                                                        th:text="${m.nombreMarca}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="space-y-3">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Precio de Mercado</label>
+                                        <div class="relative">
+                                            <span class="absolute left-6 top-1/2 -translate-y-1/2 font-black text-slate-400 text-xs">S/</span>
+                                            <input type="number" step="0.01" th:field="*{precio_dpc}" required class="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 transition-all font-black text-emerald-600 text-lg">
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Stock de Almacén</label>
+                                        <input type="number" th:field="*{inventarioTotal}" required class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-bold text-slate-700 text-lg text-center">
+                                    </div>
+
+                                    <div class="md:col-span-2 space-y-3">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Descripción Técnica</label>
+                                        <textarea th:field="*{descripcion_dpc}" rows="4" class="w-full px-6 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:ring-4 focus:ring-blue-600/5 focus:border-blue-600 transition-all font-medium text-slate-600 leading-relaxed"></textarea>
+                                    </div>
+
+                                    <div class="md:col-span-2 space-y-4">
+                                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Categorización</label>
+                                        <div class="flex flex-col sm:flex-row gap-3">
+                                            <select id="categoriaSelect" class="flex-1 px-6 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:border-blue-600 font-bold text-slate-700">
+                                                <option value="">Seleccionar Categoría...</option>
+                                                <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombreCategoria}"></option>
+                                            </select>
+                                            <button type="button" id="agregarCategoriaBtn" class="px-8 py-4 bg-slate-900 text-white rounded-2xl hover:bg-blue-600 transition-all font-black text-[10px] uppercase tracking-widest shadow-lg shadow-slate-900/20">
+                                                Añadir
+                                            </button>
+                                        </div>
+                                        <div id="categoriasSeleccionadas" class="flex flex-wrap gap-2 p-4 bg-white/50 border border-dashed border-slate-200 rounded-2xl min-h-[60px]">
+                                        </div>
+                                        <input type="hidden" th:field="*{categoriaIds}" id="categoriasIds" />
+
+                                        <div class="p-8 md:p-10 bg-white border-t border-slate-50 flex flex-col md:flex-row justify-end items-center gap-4">
+                                            <a th:href="@{/admin/productos}" class="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] hover:text-slate-900 transition-colors px-6">Cancelar</a>
+                                            <button type="submit" class="w-full md:w-auto px-16 py-5 bg-slate-900 text-white rounded-[2rem] font-black text-[11px] uppercase tracking-[0.25em] shadow-2xl shadow-slate-900/30 hover:bg-blue-600 hover:-translate-y-1 transition-all duration-300">
+                                                <i class="fa fa-save mr-3 opacity-50"></i> Guardar Cambios
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+
+<footer class="mt-auto w-full px-4 md:px-8 lg:px-12 pb-8">
+    <div class="bg-white/70 backdrop-blur-xl border border-gray-100 rounded-[2rem] p-6 md:p-8 shadow-[0_10px_40px_rgba(0,0,0,0.02)]">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+
+            <div class="flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
+                <div class="w-10 h-10 bg-[#0f172a] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/10">
+                    <i class="fas fa-code text-white text-xs"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Desarrollado por</p>
+                    <p class="text-sm font-bold text-gray-800">
+                        &copy; 2026 <a href="#" class="text-blue-600 hover:text-[#0f172a] transition-colors">CREARVEINT</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center items-center gap-4 md:gap-8">
+                <div class="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
+                    <div class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </div>
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest text-nowrap">Sistema Activo</span>
+                </div>
+
+                <div class="hidden md:block h-8 w-[1px] bg-gray-100"></div>
+
+                <div class="text-center md:text-right">
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Alesstore v3.0</p>
+                    <p class="text-[9px] font-medium text-gray-400 mt-1">Todos los derechos reservados</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* Estilo para la barra de desplazamiento */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:src="@{/js/notificaciones.js}"></script>
+<!-- JS global para el dashboard -->
+<script th:src="@{/AdminLTE/custom/main-admin.js}"></script>
+
+<!-- JavaScript para manejar categorías -->
+<script th:inline="javascript">
+    // --- GESTIÓN DE CATEGORÍAS ---
+    let categoriasSeleccionadasSet = new Set();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoriaSelect = document.getElementById('categoriaSelect');
+        const agregarBtn = document.getElementById('agregarCategoriaBtn');
+        const container = document.getElementById('categoriasSeleccionadas');
+        const hiddenInput = document.getElementById('categoriasIds');
+
+        // 1. Cargar categorías si ya existen (Edición)
+        if (hiddenInput && hiddenInput.value) {
+            // Limpiamos formatos de lista como [1, 2] a 1,2
+            const idsStr = hiddenInput.value.replace(/[\[\]\s]/g, '');
+            if (idsStr) {
+                const ids = idsStr.split(',');
+                ids.forEach(id => {
+                    const option = Array.from(categoriaSelect.options).find(opt => opt.value == id);
+                    if (option) {
+                        renderizarTag(id, option.text);
+                    }
+                });
+            }
+        }
+
+        // 2. Evento para añadir categorías
+        agregarBtn.addEventListener('click', function() {
+            const id = categoriaSelect.value;
+            const nombre = categoriaSelect.options[categoriaSelect.selectedIndex].text;
+
+            if (id && !categoriasSeleccionadasSet.has(id)) {
+                renderizarTag(id, nombre);
+                actualizarHiddenInput();
+            }
+            categoriaSelect.value = "";
+        });
+
+        function renderizarTag(id, nombre) {
+            categoriasSeleccionadasSet.add(id.toString());
+
+            const tag = document.createElement('div');
+            tag.className = "flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest animate-fade-in shadow-md";
+            tag.innerHTML = `
+                <span>${nombre}</span>
+                <button type="button" class="hover:text-rose-400 transition-colors" onclick="eliminarTag('${id}', this)">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(tag);
+        }
+
+        window.eliminarTag = function(id, btn) {
+            categoriasSeleccionadasSet.delete(id.toString());
+            btn.parentElement.remove();
+            actualizarHiddenInput();
+        };
+
+        function actualizarHiddenInput() {
+            hiddenInput.value = Array.from(categoriasSeleccionadasSet).join(',');
+            console.log("Enviando categorías:", hiddenInput.value);
+        }
+    });
+
+    // --- PREVISUALIZACIONES DE ARCHIVOS ---
+</script>
+<!--NOTIFICACIONES -->
+<script th:inline="javascript">
+    window.pedidosPendientesCount = [[${pedidosPendientesCount}]];
+    window.entregasCompletadasCount = [[${entregasCompletadasCount}]];
+</script>
+<style>
+    @keyframes fade-in-out {
+        0% { opacity: 0; transform: translateY(-10px); }
+        10% { opacity: 1; transform: translateY(0); }
+        90% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-10px); }
+    }
+    .animate-fade-in-out {
+        animation: fade-in-out 4s forwards;
+    }
+</style>
+<!--FIN NOTIFICACIONES -->
+<!--JavaScript para eliminar las galaerias secundarias-->
+<script th:src="@{/js/productos/eliminarGaleriaSecundaria.js}"></script>
+
+</body>
+</html>

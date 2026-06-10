@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos Disponibles - Repartidor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f3f4f6; /* Fondo gris claro */
+    }
+  </style>
+</head>
+<body>
+<div class="container mx-auto max-w-6xl mt-8 p-4 sm:p-6">
+
+  <h1 class="text-3xl font-extrabold text-gray-800 mb-6 flex items-center border-b pb-4">
+    <span class="mr-3 text-indigo-600">🚚</span> Pedidos Disponibles (Repartidor)
+  </h1>
+
+  <div th:if="${success}"
+       class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded-lg"
+       th:text="${success}">
+  </div>
+  <div th:if="${error}"
+       class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-lg"
+       th:text="${error}">
+  </div>
+
+  <div th:if="${#lists.isEmpty(pedidos)}"
+       class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg">
+    <p class="font-bold">Información</p>
+    <p>No hay pedidos disponibles para asignar en este momento.</p>
+  </div>
+
+  <div class="overflow-x-auto shadow-lg rounded-xl" th:if="${!#lists.isEmpty(pedidos)}">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-indigo-600">
+      <tr>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">
+          Número
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">
+          ID Cliente
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">
+          Total (S/.)
+        </th>
+        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-white uppercase tracking-wider">
+          Método de Pago
+        </th>
+        <th scope="col" class="relative px-6 py-3">
+          <span class="sr-only">Acción</span>
+        </th>
+      </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+      <tr th:each="pedido : ${pedidos}" class="hover:bg-gray-50 transition-colors">
+        <td th:text="${pedido.numeroPedido}" class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900"></td>
+        <td th:text="${pedido.usuarioId}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
+        <td th:text="${pedido.total}" class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600"></td>
+        <td th:text="${pedido.metodoPago}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-700"></td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <span class="inline-flex px-2 md:px-3 py-1 text-[10px] md:text-xs font-semibold rounded-full"
+                    th:classappend="|
+                                      ${pedido.estadoPedido.name() == 'CREADO' ? 'bg-gray-100 text-gray-800' :
+                                      pedido.estadoPedido.name() == 'PROCESANDO' ? 'bg-yellow-100 text-yellow-800' :
+                                      pedido.estadoPedido.name() == 'EN_CAMINO' ? 'bg-blue-100 text-blue-800' :
+                                      pedido.estadoPedido.name() == 'ENTREGADO' ? 'bg-green-100 text-green-800' :
+                                      'bg-gray-100 text-gray-800'}
+                                  |"
+                    th:text="${pedido.estadoPedido.label}">
+                            </span>
+              <div th:if="${pedido.estadoPedido.name() == 'CREADO'}"
+                   class="p-2 bg-gray-100 border border-gray-300 rounded-xl text-sm text-gray-600">
+                  <span class="block font-bold mb-1 text-[10px] uppercase">Validando...</span>
+                  <span th:id="'timer-creado-' + ${pedido.id}"
+                        th:data-fecha="${pedido.fechaPedido}"
+                        class="font-mono font-bold">
+                        --:--
+                  </span>
+              </div>
+
+              <div th:if="${pedido.estadoPedido.name() == 'PROCESANDO'}"
+                   class="p-2 bg-yellow-50 border border-yellow-300 rounded-xl text-sm text-yellow-800">
+                  <span class="block font-bold mb-1 text-[10px] uppercase text-orange-600">⏳ En Preparación</span>
+                  <span th:id="'timer-procesando-' + ${pedido.id}"
+                        th:data-fecha="${pedido.fechaProcesando}"
+                        class="font-mono font-bold">
+                        --:--
+                  </span>
+              </div>
+
+              <form th:if="${pedido.estadoPedido.name() == 'CONFIRMADO'}"
+                    th:action="@{/pedidosRepartidor/{id}/tomar(id=${pedido.id})}" method="post">
+                  <button type="submit"
+                          class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-all flex items-center justify-center w-full">
+                      <i class="fas fa-hand-paper mr-2"></i> Tomar Pedido
+                  </button>
+              </form>
+          </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-8">
+    <a th:href="@{/pedidosRepartidor/pedidos}"
+       class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+      <i class="fas fa-arrow-left mr-2"></i> Volver a Mis Pedidos Asignados
+    </a>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const timersRepartidor = document.querySelectorAll("[id^='timer-']");
+
+        timersRepartidor.forEach(span => {
+            const fechaData = span.dataset.fecha;
+            if (!fechaData || fechaData === "null") return;
+
+            const disponibleEn = new Date(new Date(fechaData).getTime() + (30 * 60 * 1000));
+
+            const interval = setInterval(() => {
+                const ahora = new Date();
+                const diff = disponibleEn - ahora;
+
+                if (diff <= 0) {
+                    clearInterval(interval);
+                    span.innerText = "¡Habilitando!";
+                    span.classList.add("text-green-500", "font-bold");
+                    // Recarga rápida (800ms) para que el repartidor tome el pedido pronto
+                    setTimeout(() => { location.reload(); }, 800);
+                    return;
+                }
+
+                const segundos = Math.floor(diff / 1000);
+                // CORRECCIÓN: Minutos es segundos / 60
+                const mm = String(Math.floor(segundos / 60)).padStart(2, "0");
+                const ss = String(segundos % 60).padStart(2, "0");
+
+                span.innerText = `${mm}:${ss}`;
+            }, 1000);
+        });
+    });
+</script>
+</body>
+</html>

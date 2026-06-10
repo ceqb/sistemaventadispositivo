@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ===== HEADER MÓVIL (FRAGMENTO REPARADO) ===== -->
+<header th:fragment="mobileHeader"
+        class="main-header md:hidden flex items-center justify-between px-4 py-3 bg-white shadow">
+
+    <!-- Botón Hamburguesa -->
+    <button id="sidebar-toggle" class="p-2 text-gray-800 focus:outline-none">
+
+        <i class="fas fa-bars text-xl"></i>
+    </button>
+
+    <!-- Logo -->
+    <a href="#" class="font-bold text-2xl text-blue-600">
+        ALESSTORE
+    </a>
+
+    <!-- Avatar -->
+    <div class="relative group">
+        <div class="flex items-center cursor-pointer">
+            <img th:src="@{/AdminLTE/dist/img/user02-160x160.jpg}"
+                 class="w-8 h-8 rounded-full border-2 border-white shadow-md"
+                 alt="User Image">
+        </div>
+
+        <!-- Dropdown -->
+        <ul class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-xl
+                   opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
+
+            <li class="p-4 border-b border-gray-200">
+                <div class="flex flex-col items-center">
+                    <img th:src="@{/AdminLTE/dist/img/user02-160x160.jpg}"
+                         class="w-16 h-16 rounded-full border-2 border-white shadow-md mb-2"
+                         alt="User Image">
+
+                    <p class="font-bold text-gray-900"
+                       th:text="'Bienvenido - ' + ${usuarioLogueado.nombre}">
+                        Bienvenido
+                    </p>
+
+                    <small class="text-gray-500"
+                           th:text="'Usted es, ' + ${usuarioLogueado.nombreCargo}">
+                        Cargo
+                    </small>
+                </div>
+            </li>
+
+            <li class="p-2">
+                <a th:href="@{/logout}"
+                   class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                    Cerrar Sesión
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+</header>
+
+</body>
+</html>
