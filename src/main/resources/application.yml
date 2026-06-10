@@ -31,12 +31,9 @@ spring:
   jpa:
     show-sql: false
     hibernate:
-
+      ddl-auto: validate
       format_sql: true
-      dialect: org.hibernate.dialect.MySQL8Dialect
-
-
-      ddl-auto: update
+      #dialect: org.hibernate.dialect.MySQL8Dialect
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     open-in-view: false
