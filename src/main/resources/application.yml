@@ -19,17 +19,26 @@ mercadopago:
 
 spring:
   datasource:
+<<<<<<< HEAD
     url: ${DATABASE_URL:jdbc:mysql://localhost:3306/bd_pricelens?useSSL=true&allowPublicKeyRetrieval=true}
     username: ${DATABASE_USERNAME:root}
     password: ${DATABASE_PASSWORD:1234}
+=======
+    url: jdbc:mysql://localhost:3306/bd_tienda_alesstore
+    username: root
+    password: 1234
+>>>>>>> 52a4b1b19563c47f7f6140ffcba9bc9c19bb13de
     driver-class-name: com.mysql.cj.jdbc.Driver
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
   jpa:
     show-sql: false
     hibernate:
+<<<<<<< HEAD
       format_sql: true
       dialect: org.hibernate.dialect.MySQL8Dialect
+=======
+>>>>>>> 52a4b1b19563c47f7f6140ffcba9bc9c19bb13de
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
