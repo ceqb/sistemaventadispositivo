@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080}
+  port: ${PORT:9009}
   servlet:
     multipart:
       enabled: true
@@ -61,7 +61,7 @@ error:
   include-exception: false
 
 app:
-  baseUrlCloudaflare: "https://oklahoma-prevention-publication-bunch.trycloudflare.com/"
+  baseUrlCloudaflare: ${APP_URL:https://sistemaventadispositivo-production.up.railway.app/}
 
 logging:
   level:
