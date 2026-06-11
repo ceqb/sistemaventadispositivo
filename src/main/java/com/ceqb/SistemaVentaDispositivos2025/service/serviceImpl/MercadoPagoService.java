@@ -31,7 +31,7 @@ public class MercadoPagoService {
 
     // ✅ Inyecta la URL base con la anotación @Value
     @Value("${app.baseUrlCloudaflare}")
-    private String baseUrlCloudaflare;
+    private String publicUrl;
 
 
     @PostConstruct
@@ -55,7 +55,7 @@ public class MercadoPagoService {
         }
 
         // ✅ La URL del webhook debe ser tu URL de ngrok
-        String notificationUrl = baseUrlCloudaflare + "/mercadopago/webhook";
+        String notificationUrl = publicUrl + "/mercadopago/webhook";
 
         // ✅ Se añade el external_reference y metadata
         Map<String, Object> metadata = new HashMap<>();
@@ -65,9 +65,9 @@ public class MercadoPagoService {
         // 1. Crea el objeto con tus URLs de retorno
         //************************************************************************
         PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success(baseUrlCloudaflare + "/pedido-confirmado")
-                .pending(baseUrlCloudaflare + "/pedido-pendiente")
-                .failure(baseUrlCloudaflare + "/pedido-fallo")
+                .success(publicUrl + "/pedido-confirmado")
+                .pending(publicUrl + "/pedido-pendiente")
+                .failure(publicUrl + "/pedido-fallo")
                 .build();
 
         PreferenceRequest request = PreferenceRequest.builder()

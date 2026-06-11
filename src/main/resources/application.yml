@@ -20,11 +20,9 @@ mercadopago:
 spring:
   datasource:
 
-    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/bd_pricelens?useSSL=true&allowPublicKeyRetrieval=true}
+    url: ${DATABASE_URL:jdbc:mysql://localhost:3306/bd_tienda_alesstore?useSSL=true&allowPublicKeyRetrieval=true}
     username: ${DATABASE_USERNAME:root}
     password: ${DATABASE_PASSWORD:1234}
-
-
     driver-class-name: com.mysql.cj.jdbc.Driver
   autoconfigure:
     exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
