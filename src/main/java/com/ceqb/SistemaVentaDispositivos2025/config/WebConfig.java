@@ -65,7 +65,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
+                .addResourceLocations("classpath:/static/uploads/");
         // AdminLTE
         registry.addResourceHandler("/AdminLTE/**")
                 .addResourceLocations("classpath:/static/AdminLTE/");
