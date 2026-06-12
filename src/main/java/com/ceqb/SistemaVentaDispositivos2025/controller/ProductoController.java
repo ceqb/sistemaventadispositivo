@@ -121,18 +121,14 @@ public class ProductoController {
                                   Model model) { // Importante: usa Model en lugar de RedirectAttributes
 
         try {
-            String carpetaModelo = productoDTO.getModelo_dpc().replaceAll("\\s+", "_");
-            String rutaFisica = "uploads/" + carpetaModelo;
+            String nombreLimpio = productoService.normalizarNombre(productoDTO.getModelo_dpc());
+            String rutaFisica = "uploads/" + nombreLimpio;
             // Guardar foto
             if (!archivoFoto.isEmpty()) {
-
-                // 2. Llamamos a tu método pasándole la nueva subcarpeta
-                String nombreFoto = productoService.guardarArchivo(archivoFoto, "uploads/" + carpetaModelo);
-
-                // 3. IMPORTANTE: Guardamos "Carpeta/Nombre" en la BD para que se pueda leer
+                String nombreFoto = productoService.guardarArchivo(archivoFoto, rutaFisica);
                 productoDTO.setRutaFoto_dpc(nombreFoto);
             }
-            // Guardar video
+
             if (!archivoVideo.isEmpty()) {
                 String nombreVideo = productoService.guardarArchivo(archivoVideo, "uploads/videos");
                 productoDTO.setRutaVideo_dpc(nombreVideo);
@@ -204,6 +200,7 @@ public class ProductoController {
         // El retorno a 'admin/nuevoProducto' es correcto
         return "admin/nuevoProducto";
     }
+
     @PostMapping("/actualizar/{id}")
     public String actualizarProducto(
             @PathVariable Long id,
@@ -220,14 +217,14 @@ public class ProductoController {
             ProductoDTO productoExistente = productoService.obtenerPorId(id);
             if (productoExistente == null) throw new RuntimeException("El producto no existe.");
 
-            String modeloAntiguo = productoExistente.getModelo_dpc().replaceAll("\\s+", "_");
-            String modeloNuevo = productoDTO.getModelo_dpc().replaceAll("\\s+", "_");
-            String rutaFisica = "uploads/" + modeloNuevo;
+            String nombreAntiguo = productoService.normalizarNombre(productoExistente.getModelo_dpc());
+            String nombreNuevo = productoService.normalizarNombre(productoDTO.getModelo_dpc());
+            String rutaFisica = "uploads/" + nombreNuevo;
 
             // ✅ Renombrar carpeta ANTES de guardar archivos
-            if (!modeloAntiguo.equals(modeloNuevo)) {
-                File dirAntiguo = new File("uploads/" + modeloAntiguo);
-                File dirNuevo = new File("uploads/" + modeloNuevo);
+            if (!nombreAntiguo.equals(nombreNuevo)) {
+                File dirAntiguo = new File("uploads/" + nombreAntiguo);
+                File dirNuevo = new File("uploads/" + nombreNuevo);
 
                 if (dirAntiguo.exists()) {
                     boolean ok = dirAntiguo.renameTo(dirNuevo);

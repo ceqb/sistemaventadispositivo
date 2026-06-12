@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -373,34 +374,41 @@ public class ProductoServiceImpl implements ProductoService {
 
     public String guardarArchivo(MultipartFile archivo, String rutaDirectorio) {
         String nombreOriginalCompleto = archivo.getOriginalFilename();
-        String nombreBase = nombreOriginalCompleto;
         String extension = "";
         int indicePunto = nombreOriginalCompleto.lastIndexOf('.');
 
-
         if (indicePunto > 0) {
-            nombreBase = nombreOriginalCompleto.substring(0, indicePunto);
             extension = nombreOriginalCompleto.substring(indicePunto);
         }
 
+        // Normalizamos el nombre base antes de añadir el UUID
+        String nombreBase = (indicePunto > 0) ? nombreOriginalCompleto.substring(0, indicePunto) : nombreOriginalCompleto;
+        String nombreLimpio = normalizarNombre(nombreBase);
 
-        String nombreBaseUnico = nombreBase + "_" + UUID.randomUUID();
-        String nombreArchivoFinal = nombreBaseUnico + extension;
-
+        String nombreArchivoFinal = nombreLimpio + "_" + UUID.randomUUID() + extension;
 
         File directorio = new File(rutaDirectorio);
         if (!directorio.exists()) directorio.mkdirs();
-
 
         Path rutaArchivo = Paths.get(rutaDirectorio, nombreArchivoFinal);
         try {
             Files.copy(archivo.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error al guardar archivo: " + e.getMessage());
         }
         return nombreArchivoFinal;
     }
 
+    public String normalizarNombre(String nombre) {
+        if (nombre == null) return "sin_nombre";
+        // 1. Elimina tildes y normaliza a caracteres básicos
+        String normalizado = Normalizer.normalize(nombre, Normalizer.Form.NFD);
+        // 2. Quita caracteres de tilde, reemplaza ñ por n, convierte a minúsculas, espacios a guiones
+        return normalizado.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "")
+                .replace("ñ", "n").replace("Ñ", "n")
+                .replaceAll("[^a-zA-Z0-9]", "_")
+                .toLowerCase();
+    }
     @Override
     public Page<ProductoDTO> buscarProductosPaginado(String query, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());

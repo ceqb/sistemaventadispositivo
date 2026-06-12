@@ -40,7 +40,7 @@ public interface ProductoService {
 
     // Productos relacionados (por categoría, excluyendo el actual)
     List<ProductoDTO> obtenerRelacionados(Long categoriaId, Long productoId);
-
+    String normalizarNombre(String nombre);
     // Interacciones
     @Transactional
     void registrarClick(Long productoId);
