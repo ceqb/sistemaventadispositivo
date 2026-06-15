@@ -29,6 +29,8 @@ public class UsuarioDTO implements Serializable {
     private LocalDateTime expiracionCodigo;
     private String codigoDesbloqueo;
 
+    private Boolean bypassValidaciones = false;
+
     private Boolean verificado;
     private String tokenVerificacion;
 

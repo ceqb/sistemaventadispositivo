@@ -25,6 +25,7 @@ public class UsuarioMapper {
                 .expiracionCodigo(usuario.getExpiracionCodigo())
                 .idCargo(usuario.getCargo() != null ? usuario.getCargo().getIdcargo() : 0)
                 .nombreCargo(usuario.getCargo() != null ? usuario.getCargo().getNombrecargo() : null)
+                .bypassValidaciones(Boolean.TRUE.equals(usuario.getBypassValidaciones()))
                 .build();
     }
 

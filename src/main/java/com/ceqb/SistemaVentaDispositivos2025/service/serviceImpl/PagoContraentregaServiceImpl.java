@@ -70,9 +70,10 @@ private final ProductoService productoService;
         if (carritoActual.isEmpty()) {
             throw new IllegalStateException("El carrito está vacío.");
         }
-        // 🔥 OBTENER EL NOMBRE DE USUARIO PARA LA EXCEPCIÓN
-        // NOTA: Si 'getNombreUsuario()' no existe, usa el getter correcto de tu entidad Usuario (ej: getUsername())
-        String nombreUsuario = usuario.getUsuario();
+
+        // ✅ Usamos el flag del DTO, no el nombre de usuario
+        boolean tieneBypass = Boolean.TRUE.equals(usuarioDTO.getBypassValidaciones());
+
         // ============================================================
         // 1. VALIDAR SI TIENE PEDIDO BLOQUEADO
         // ============================================================
@@ -81,32 +82,26 @@ private final ProductoService productoService;
         if (pedidoActivoOpt.isPresent()) {
             Pedido p = pedidoActivoOpt.get();
 
-            boolean pedidoEnProceso = p.getEstadoPedido() == EstadoPedido.EN_CAMINO ||
-                    (p.getEstadoPago().equals(EstadoPago.PENDIENTE.name()) && p.getEstadoPedido() == EstadoPedido.CONFIRMADO);
+            boolean pedidoBloqueado = p.getEstadoPago().equals(EstadoPago.APROBADO.name())
+                    && !p.getEstadoPedido().esFinal();
 
-            boolean pedidoBloqueado =
-                    //p.getEstadoPedido() == EstadoPedido.EN_CAMINO ||
-                            (p.getEstadoPago().equals(EstadoPago.APROBADO.name()) &&
-                                    !p.getEstadoPedido().esFinal());
-
-            if (pedidoBloqueado) {
-                // 🚨 APLICAR EXCEPCIÓN: Si NO es "cquiroz", lanza la prohibición.
-                if (!nombreUsuario.equals("cquiroz")) {
-                    throw new IllegalStateException(
-                            "Tu pedido anterior está en camino o ya fue pagado. No puedes generar una nueva compra."
-                    );
-                }
+            if (pedidoBloqueado && !tieneBypass) {
+                throw new IllegalStateException(
+                        "Tu pedido anterior está en camino o ya fue pagado. No puedes generar una nueva compra."
+                );
             }
         }
+
         // ============================================================
         // 2. BUSCAR PEDIDO PENDIENTE (POSIBLE REUSO)
         // ============================================================
         Optional<Pedido> pedidoPendienteOpt =
-                pedidoRepository.findTopByUsuarioAndEstadoPagoOrderByIdDesc(usuario, EstadoPago.PENDIENTE.name());
+                pedidoRepository.findTopByUsuarioAndEstadoPagoOrderByIdDesc(
+                        usuario, EstadoPago.PENDIENTE.name());
 
         if (pedidoPendienteOpt.isPresent()) {
             Pedido pedidoPendiente = pedidoPendienteOpt.get();
-            // ⏱️ VALIDACIÓN DE TIEMPO (1 MINUTO TEMPORAL)
+
             if (pedidoPendiente.getEstadoPago().equals(EstadoPago.PENDIENTE.name())
                     && pedidoPendiente.getEstadoPedido() == EstadoPedido.CREADO
                     && superoTiempoConfirmacion(pedidoPendiente, 1)) {
@@ -115,76 +110,64 @@ private final ProductoService productoService;
                 pedidoRepository.save(pedidoPendiente);
 
                 throw new IllegalStateException(
-                        "Tienes un pedido anterior que esta siendo creado. No puedes generar una nueva compra por unos minutos."
+                        "Tienes un pedido anterior que está siendo creado. Espera unos minutos."
                 );
             }
-            // ❌ 1. Si el pago ya fue aprobado en ese pedido → no se cancela NUNCA
+
             if (pedidoPendiente.getEstadoPago().equals(EstadoPago.APROBADO.name())) {
-                throw new IllegalStateException("No puedes generar una nueva compra. El pago del pedido anterior ya fue aprobado.");
+                throw new IllegalStateException(
+                        "No puedes generar una nueva compra. El pago del pedido anterior ya fue aprobado.");
             }
 
-            // ❌ 2. Si el pedido está CONFIRMADO → bloquea creación
             if (pedidoPendiente.getEstadoPedido() == EstadoPedido.CONFIRMADO) {
-                throw new IllegalStateException("No puedes generar una nueva compra. El pago del pedido anterior ya fue confirmado.");
+                throw new IllegalStateException(
+                        "No puedes generar una nueva compra. El pago del pedido anterior ya fue confirmado.");
             }
 
-            if (pedidoPendiente.getEstadoPago().equals(EstadoPago.PENDIENTE.name())&&pedidoPendiente.getEstadoPedido().equals(EstadoPedido.ENTREGADO)){
-                throw new IllegalStateException("No puedes generar una nueva compra. El pago se esta procesando.");
+            if (pedidoPendiente.getEstadoPago().equals(EstadoPago.PENDIENTE.name())
+                    && pedidoPendiente.getEstadoPedido().equals(EstadoPedido.ENTREGADO)) {
+                throw new IllegalStateException(
+                        "No puedes generar una nueva compra. El pago se está procesando.");
             }
 
-            // ❌ 2. Si el pedido ya está en camino → no se cancela
-            if (pedidoPendiente.getEstadoPedido().equals(EstadoPedido.EN_CAMINO)) {
-                // 🚨 CORRECCIÓN CLAVE AQUÍ
-                if (!nombreUsuario.equals("cquiroz")) {
-                    throw new IllegalStateException("No puedes generar una nueva compra. Tu pedido anterior está en camino.");
-                }
+            if (pedidoPendiente.getEstadoPedido().equals(EstadoPedido.EN_CAMINO) && !tieneBypass) {
+                throw new IllegalStateException(
+                        "No puedes generar una nueva compra. Tu pedido anterior está en camino.");
             }
-            // ❌ 3. Si ya está entregado → No debería considerarse pendiente pero igual aseguramos
+
             if (pedidoPendiente.getEstadoPedido().equals(EstadoPedido.ENTREGADO)) {
-                // No cancelamos ni interactuamos con pedidos entregados
                 pedidoPendienteOpt = Optional.empty();
-            }
-            // ✅ Comparamos carrito actual con detalles del pedido pendiente
-            List<DetallePedido> detalles = detallePedidoRepository.findByPedido(pedidoPendiente);
+            } else {
+                List<DetallePedido> detalles = detallePedidoRepository.findByPedido(pedidoPendiente);
 
-            boolean carritoIgual = detalles.size() == carritoActual.size()
-                    && detalles.stream().allMatch(d ->
-                    carritoActual.stream().anyMatch(c ->
-                            Objects.equals(c.getProducto().getId(), d.getProducto().getId())
-                                    && c.getCantidad() == d.getCantidad()
-                    )
-            );
-            if (carritoIgual) {
-                // ✅ REUTILIZAR EL PEDIDO
-                pedidoPendiente.setDireccionEntrega(direccionEntrega);
-                pedidoRepository.save(pedidoPendiente);
+                boolean carritoIgual = detalles.size() == carritoActual.size()
+                        && detalles.stream().allMatch(d ->
+                        carritoActual.stream().anyMatch(c ->
+                                Objects.equals(c.getProducto().getId(), d.getProducto().getId())
+                                        && c.getCantidad() == d.getCantidad()
+                        )
+                );
 
-                PedidoDTO dto = pedidoMapper.toDto(pedidoPendiente);
-                dto.setMensaje("Se reutilizó tu pedido anterior porque tienes uno igual en proceso.");
-
-                // 🔥 CORRECCIÓN: Vaciar el carrito aquí.
-                carritoRepository.deleteByUsuario(usuario);
-                return dto;
-            }else {
-                // 🚨 CORRECCIÓN CLAVE: Solo abandonar si NO es cquiroz
-                if (!nombreUsuario.equals("cquiroz")) {
-                    // 🔥 Abandonamos pedido viejo
-                    pedidoService.liberarReserva(pedidoPendiente);
-                    pedidoPendiente.setEstadoPago(EstadoPago.ABANDONADO.name());
-                    pedidoPendiente.setEstadoPedido(EstadoPedido.ABANDONADO);
+                if (carritoIgual) {
+                    pedidoPendiente.setDireccionEntrega(direccionEntrega);
                     pedidoRepository.save(pedidoPendiente);
-                }
 
-                // 🚀 Creamos nuevo pedido
-                return crearNuevoPedidoContraEntrega(usuario, carritoActual, direccionEntrega);
+                    carritoRepository.deleteByUsuario(usuario);
+
+                    PedidoDTO dto = pedidoMapper.toDto(pedidoPendiente);
+                    dto.setMensaje("Se reutilizó tu pedido anterior porque tienes uno igual en proceso.");
+                    return dto;
+                } else {
+                    if (!tieneBypass) {
+                        pedidoService.liberarReserva(pedidoPendiente);
+                        pedidoPendiente.setEstadoPago(EstadoPago.ABANDONADO.name());
+                        pedidoPendiente.setEstadoPedido(EstadoPedido.ABANDONADO);
+                        pedidoRepository.save(pedidoPendiente);
+                    }
+                    return crearNuevoPedidoContraEntrega(usuario, carritoActual, direccionEntrega);
+                }
             }
-            //pedidoPendiente.setDireccionEntrega(direccionEntrega);
-            // ⚡ Si el carrito no cambió → devolvemos DTO del pedido pendiente
-           // return pedidoMapper.toDto(pedidoPendiente);
         }
-        // ============================================================
-        // 3. SI NO EXISTE PENDIENTE → crear nuevo pedido
-        // ============================================================
 
         return crearNuevoPedidoContraEntrega(usuario, carritoActual, direccionEntrega);
     }

@@ -46,6 +46,7 @@ public class PedidoServiceImpl implements PedidoService {
     private final MercadoPagoService mercadoPagoService;
     private final JavaMailSender mailSender;
     private final Environment env;
+
     private static final Logger log = LoggerFactory.getLogger(PedidoServiceImpl.class);
 
     // ✅ Versión corregida de crearPedidoYPreferencia: siempre cancela el pedido anterior y crea uno nuevo.
@@ -367,6 +368,9 @@ public class PedidoServiceImpl implements PedidoService {
         try {
             mailSender.send(message);
         } catch (Exception e) {
+            log.warn("No se pudo enviar correo de confirmación al pedido {}: {}",
+                    pedido.getNumeroPedido(), e.getMessage());
+            // No relanzamos porque el correo es secundario al flujo principal
         }
     }
 
@@ -462,7 +466,8 @@ public class PedidoServiceImpl implements PedidoService {
             pedidoRepository.saveAndFlush(pedido);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error procesando webhook de MercadoPago. Payload: {}. Error: {}",
+                    payload, e.getMessage(), e);
         }
     }
 
@@ -653,7 +658,8 @@ public class PedidoServiceImpl implements PedidoService {
                     )
             );
         } catch (Exception e) {
-            System.err.println("Error enviando WS al cliente: " + e.getMessage());
+            log.warn("No se pudo enviar notificación WebSocket al cliente para pedido {}: {}",
+                    pedido.getNumeroPedido(), e.getMessage());
         }
 
     }
@@ -999,7 +1005,8 @@ public class PedidoServiceImpl implements PedidoService {
             ));
 
         } catch (Exception e) {
-            System.err.println("ERROR al enviar WS de notificación de entrega: " + e.getMessage());
+            log.error("Error enviando notificaciones WebSocket para pedido {}: {}",
+                    pedidoId, e.getMessage(), e);
         }
     }
 

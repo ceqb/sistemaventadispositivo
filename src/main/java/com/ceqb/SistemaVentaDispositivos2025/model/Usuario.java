@@ -25,6 +25,9 @@ public class Usuario implements Serializable {
     @Column(name = "nombre")
     private String nombre;
 
+    @Column(name = "bypass_validaciones", nullable = false)
+    private Boolean bypassValidaciones = false;
+
     @Column(name = "clave")
     private String clave;
 

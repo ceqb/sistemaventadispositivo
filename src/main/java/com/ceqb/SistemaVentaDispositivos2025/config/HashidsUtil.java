@@ -1,12 +1,18 @@
 package com.ceqb.SistemaVentaDispositivos2025.config;
 
 import org.hashids.Hashids;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class HashidsUtil {
-    // Cambia "mi_llave_secreta" por cualquier palabra
-    private final Hashids hashids = new Hashids("mi_llave_secreta", 8);
+    private final Hashids hashids;
+
+    public HashidsUtil(
+            @Value("${hashids.secret}") String secret,
+            @Value("${hashids.min-length}") int minLength) {
+        this.hashids = new Hashids(secret, minLength);
+    }
 
     public String encode(Long id) {
         return hashids.encode(id);

@@ -1,0 +1,5 @@
+export TELEGRAM_BOT_TOKEN=8372862682:AAGAqW0zXpjL8LouK_W453Cfy0KVJfDSRSw
+export TELEGRAM_CHAT_ID=657913651
+export HASHIDS_SECRET=mi_clave_super_secreta_produccion
+export MP_ACCESS_TOKEN=APP_USR-...
+export APP_BASE_URL=https://tudominio.com
